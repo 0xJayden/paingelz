@@ -39,8 +39,8 @@ export default function Home() {
     const newDots: Dot[] = [];
     for (let i = 0; i < 20; i++) {
       newDots.push({
-        x: e.clientX,
-        y: e.clientY,
+        x: e.clientX + 10,
+        y: e.clientY + 10,
         xSpeed: Math.random() * 2,
         ySpeed: Math.random() * 2,
         yAcceleration: 1.01,
@@ -61,7 +61,7 @@ export default function Home() {
     <main
       className={`relative flex min-h-screen overflow-hidden bg-[#99ccff] flex-col items-center justify-between ${inter.className}`}
     >
-      <div className="absolute z-30 inset-0">
+      <div className="absolute z-10 inset-0">
         {dots.map((dot, i) => {
           return (
             <div
@@ -132,7 +132,7 @@ const MintWindow = ({
       return prev.map((dot) => {
         let newX = dot.x + dot.xSpeed;
         let newY = dot.y + dot.ySpeed * dot.yAcceleration;
-        let newYAcceleration = dot.yAcceleration + 0.02;
+        // let newYAcceleration = dot.yAcceleration + 0.02;
 
         if (
           !dotContainerRef.current?.offsetWidth ||
@@ -145,7 +145,7 @@ const MintWindow = ({
         }
 
         if (newY >= dotContainerRef.current.offsetHeight - 20 || newY <= 10) {
-          dot.yAcceleration = -dot.yAcceleration;
+          // dot.yAcceleration = -dot.yAcceleration;
           dot.ySpeed = -dot.ySpeed;
         }
 
@@ -162,7 +162,7 @@ const MintWindow = ({
           y: newY,
           xSpeed: dot.xSpeed,
           ySpeed: dot.ySpeed,
-          yAcceleration: newYAcceleration,
+          yAcceleration: dot.yAcceleration,
           size: dot.size,
           color: dot.color,
         };
