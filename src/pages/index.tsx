@@ -59,7 +59,7 @@ export default function Home() {
 
   return (
     <main
-      className={`relative flex min-h-screen overflow-hidden bg-[#99ccff] flex-col items-center justify-between ${inter.className}`}
+      className={`absolute flex inset-0 overflow-hidden text-white bg-[#99ccff] flex-col items-center justify-between ${inter.className}`}
     >
       <div className="absolute z-10 inset-0">
         {dots.map((dot, i) => {
@@ -153,9 +153,9 @@ const MintWindow = ({
           dot.y = Math.random() * dotContainerRef.current.offsetHeight - 20;
         }
 
-        // if (newX > dotContainerRef.current?.offsetWidth || newX < 0) {
-        //   dot.x = Math.random() * dotContainerRef.current?.offsetWidth - 10;
-        // }
+        if (newX > dotContainerRef.current?.offsetWidth || newX < -5) {
+          dot.x = Math.random() * dotContainerRef.current?.offsetWidth - 10;
+        }
 
         return {
           x: newX,
