@@ -132,9 +132,9 @@ const MintWindow = ({
       return prev.map((dot) => {
         let newX = dot.x + dot.xSpeed;
         let newY = dot.y + dot.ySpeed * dot.yAcceleration;
-        let newYAcceleration = dot.yAcceleration;
+        // let newYAcceleration = dot.yAcceleration;
 
-        if (dot.yAcceleration < 5) newYAcceleration = dot.yAcceleration + 0.02;
+        // if (dot.yAcceleration < 5) newYAcceleration = dot.yAcceleration + 0.02;
 
         if (
           !dotContainerRef.current?.offsetWidth ||
@@ -147,16 +147,16 @@ const MintWindow = ({
         }
 
         if (newY >= dotContainerRef.current.offsetHeight - 20 || newY <= 10) {
-          dot.yAcceleration = -dot.yAcceleration;
+          // dot.yAcceleration = -dot.yAcceleration;
           dot.ySpeed = -dot.ySpeed;
         }
 
         if (newY > dotContainerRef.current?.offsetHeight || newY < 0) {
-          dot.y = Math.random() * dotContainerRef.current.offsetHeight - 20;
+          newY = Math.random() * dotContainerRef.current.offsetHeight - 20;
         }
 
         if (newX > dotContainerRef.current?.offsetWidth || newX < -5) {
-          dot.x = Math.random() * dotContainerRef.current?.offsetWidth - 10;
+          newX = Math.random() * dotContainerRef.current?.offsetWidth - 10;
         }
 
         return {
@@ -164,7 +164,7 @@ const MintWindow = ({
           y: newY,
           xSpeed: dot.xSpeed,
           ySpeed: dot.ySpeed,
-          yAcceleration: newYAcceleration,
+          yAcceleration: dot.yAcceleration,
           size: dot.size,
           color: dot.color,
         };
