@@ -132,7 +132,9 @@ const MintWindow = ({
       return prev.map((dot) => {
         let newX = dot.x + dot.xSpeed;
         let newY = dot.y + dot.ySpeed * dot.yAcceleration;
-        // let newYAcceleration = dot.yAcceleration + 0.02;
+        let newYAcceleration = dot.yAcceleration;
+
+        if (dot.yAcceleration < 5) newYAcceleration = dot.yAcceleration + 0.02;
 
         if (
           !dotContainerRef.current?.offsetWidth ||
@@ -145,7 +147,7 @@ const MintWindow = ({
         }
 
         if (newY >= dotContainerRef.current.offsetHeight - 20 || newY <= 10) {
-          // dot.yAcceleration = -dot.yAcceleration;
+          dot.yAcceleration = -dot.yAcceleration;
           dot.ySpeed = -dot.ySpeed;
         }
 
@@ -162,7 +164,7 @@ const MintWindow = ({
           y: newY,
           xSpeed: dot.xSpeed,
           ySpeed: dot.ySpeed,
-          yAcceleration: dot.yAcceleration,
+          yAcceleration: newYAcceleration,
           size: dot.size,
           color: dot.color,
         };
@@ -214,7 +216,7 @@ const MintWindow = ({
                 height: dot.size + "px",
                 width: dot.size + "px",
               }}
-              className={`absolute rounded-full`}
+              className={`absolute opacity-70 rounded-full`}
             >
               *
             </div>
@@ -231,10 +233,10 @@ const MintWindow = ({
             Paingelz Mint
           </p>
         </div>
-        <h1 className="text-white pb-4 text-2xl font-bold p-2">
+        <h1 className="text-white z-10 pb-4 text-2xl font-bold p-2">
           Mint Paingelz
         </h1>
-        <div className="p-2 flex items-center justify-center flex-col border border-dashed py-4 border-[#00eeee] space-y-2">
+        <div className="p-2 z-10 flex items-center justify-center flex-col border border-dashed py-4 border-[#00eeee] space-y-2">
           <p>Feel the pain</p>
           <button
             onClick={() => generateDots()}
