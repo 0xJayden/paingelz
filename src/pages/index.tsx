@@ -41,7 +41,7 @@ export default function Home() {
       newDots.push({
         x: e.clientX + 10,
         y: e.clientY + 10,
-        xSpeed: Math.random() * 2,
+        xSpeed: Math.random() * (i % 2 === 0 ? 2 : -2),
         ySpeed: Math.random() * 2,
         yAcceleration: 1.01,
         size: 2,
