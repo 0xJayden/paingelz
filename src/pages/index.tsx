@@ -9,8 +9,9 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const [openMint, setOpenMint] = useState(true);
+  const [openMint, setOpenMint] = useState(false);
   const [dots, setDots] = useState<Array<Dot>>([]);
+  const [openSplash, setOpenSplash] = useState(true);
 
   const requestRef = useRef<number>(0);
 
@@ -52,6 +53,12 @@ export default function Home() {
   };
 
   useEffect(() => {
+    setTimeout(() => {
+      setOpenSplash(false);
+    }, 3200);
+    setTimeout(() => {
+      setOpenMint(true);
+    }, 6000);
     document.addEventListener("click", generateDots);
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
@@ -61,36 +68,42 @@ export default function Home() {
     <main
       className={`absolute flex inset-0 overflow-hidden text-white bg-[#99ccff] flex-col items-center justify-between ${inter.className}`}
     >
-      <div className="absolute z-10 inset-0">
-        {dots.map((dot, i) => {
-          return (
-            <div
-              key={i}
-              id="dot"
-              style={{
-                top: dot.y + "px",
-                left: dot.x + "px",
-                backgroundColor: dot.color,
-                height: dot.size + "px",
-                width: dot.size + "px",
-              }}
-              className={`absolute rounded-full`}
-            ></div>
-          );
-        })}
-      </div>
-      <div className="absolute inset-0">
-        <Image
-          src={"/bgfinal.png"}
-          className="w-full h-full object-cover"
-          width={1000}
-          height={1000}
-          alt="bga"
-        />
-      </div>
-      <IconContainer setOpenMint={setOpenMint} openMint={openMint} />
-      {openMint && <MintWindow setOpenMint={setOpenMint} />}
-      <BottomNavbar setOpenMint={setOpenMint} openMint={openMint} />
+      {openSplash ? (
+        <Splash />
+      ) : (
+        <>
+          <div className="absolute z-10 inset-0">
+            {dots.map((dot, i) => {
+              return (
+                <div
+                  key={i}
+                  id="dot"
+                  style={{
+                    top: dot.y + "px",
+                    left: dot.x + "px",
+                    backgroundColor: dot.color,
+                    height: dot.size + "px",
+                    width: dot.size + "px",
+                  }}
+                  className={`absolute rounded-full`}
+                ></div>
+              );
+            })}
+          </div>
+          <div className="absolute inset-0">
+            <Image
+              src={"/bgfinal.png"}
+              className="w-full h-full object-cover"
+              width={1000}
+              height={1000}
+              alt="bga"
+            />
+          </div>
+          <IconContainer setOpenMint={setOpenMint} openMint={openMint} />
+          {openMint && <MintWindow setOpenMint={setOpenMint} />}
+          <BottomNavbar setOpenMint={setOpenMint} openMint={openMint} />
+        </>
+      )}
     </main>
   );
 }
@@ -198,11 +211,46 @@ const MintWindow = ({
   };
 
   return (
-    <div className="absolute top-10 z-20 text-[#00eeee] w-[45%] h-[45%] right-10">
+    <div className="absolute animate-open z-20 text-[#00eeee]">
       <div
         ref={dotContainerRef}
-        className="flex justify-center flex-col h-full items-center relative border-2 rounded bg-[#20201d]"
+        className="flex flex-col h-full relative border-2 rounded bg-black"
       >
+        <div className="items-center z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#ffffc9] via-[#eeeeee] to-[#ffffc9]">
+          <button
+            onClick={() => setOpenMint(false)}
+            className="bg-red-500 rounded-full h-full aspect-square flex justify-center items-center"
+          >
+            <Icon path={mdiClose} className="h-3 text-black" />
+          </button>
+          <p className="text-white text-sm drop-shadow font-bold">
+            Paingelz Mint
+          </p>
+        </div>
+        <div className="flex w-full justify-center items-center">
+          <video
+            className="h-full w-[150px]"
+            src="/paingelzlogo.mov"
+            muted
+            autoPlay
+            loop
+          />
+        </div>
+        <div className="relative z-20 h-full w-full">
+          <video
+            className="h-full w-full"
+            src="/paingelzvid.mp4"
+            muted
+            autoPlay
+            loop
+          />
+        </div>
+        <button
+          onClick={() => generateDots()}
+          className="absolute left-0 w-20 mx-auto right-0 bottom-[20%] z-30 border border-[#00eeee] p-1 px-5"
+        >
+          Mint
+        </button>
         {dots.map((dot, i) => {
           return (
             <div
@@ -222,28 +270,8 @@ const MintWindow = ({
             </div>
           );
         })}
-        <div className="absolute items-center space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#ffffc9] via-[#eeeeee] to-[#ffffc9]">
-          <button
-            onClick={() => setOpenMint(false)}
-            className="bg-red-500 rounded-full h-full aspect-square flex justify-center items-center"
-          >
-            <Icon path={mdiClose} className="h-3 text-black" />
-          </button>
-          <p className="text-white text-sm drop-shadow font-bold">
-            Paingelz Mint
-          </p>
-        </div>
-        <h1 className="text-white z-10 pb-4 text-2xl font-bold p-2">
-          Mint Paingelz
-        </h1>
         <div className="p-2 z-10 flex items-center justify-center flex-col border border-dashed py-4 border-[#00eeee] space-y-2">
           <p>Feel the pain</p>
-          <button
-            onClick={() => generateDots()}
-            className="border border-[#00eeee] p-1 px-5"
-          >
-            Mint
-          </button>
         </div>
       </div>
     </div>
@@ -313,6 +341,46 @@ const BottomNavbar = ({
           />
           {openMint && <div className="rounded-full bg-white h-1 w-1"></div>}
         </button>
+      </div>
+    </div>
+  );
+};
+
+const Splash = () => {
+  const [barWidth, setBarWidth] = useState("0%");
+
+  useEffect(() => {
+    setTimeout(() => {
+      setBarWidth("10%");
+    }, 500);
+    setTimeout(() => {
+      setBarWidth("20%");
+    }, 1500);
+    setTimeout(() => {
+      setBarWidth("50%");
+    }, 2000);
+    setTimeout(() => {
+      setBarWidth("70%");
+    }, 2200);
+    setTimeout(() => {
+      setBarWidth("90%");
+    }, 2500);
+    setTimeout(() => {
+      setBarWidth("100%");
+    }, 2900);
+  }, []);
+
+  return (
+    <div className="w-full relative h-screen flex flex-col space-y-2 items-center justify-center bg-black">
+      <video src="/paingelzlogo.mov" className="w-[50%]" autoPlay muted loop />
+      <div className="relative w-[50%] text-center border">
+        <div
+          style={{ width: `${barWidth}` }}
+          className="absolute bg-cyan-500 h-full"
+        ></div>
+        <p className="relative">
+          {barWidth === "100%" ? `Let's gooo!` : "Loading..."}
+        </p>
       </div>
     </div>
   );
