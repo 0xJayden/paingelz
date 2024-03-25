@@ -234,6 +234,7 @@ const MintWindow = ({
             muted
             autoPlay
             loop
+            playsInline
           />
         </div>
         <div className="relative z-20 h-full w-full">
@@ -243,6 +244,7 @@ const MintWindow = ({
             muted
             autoPlay
             loop
+            playsInline
           />
         </div>
         <button
@@ -372,7 +374,14 @@ const Splash = () => {
 
   return (
     <div className="w-full relative h-screen flex flex-col space-y-2 items-center justify-center bg-black">
-      <video src="/paingelzlogo.mov" className="w-[50%]" autoPlay muted loop />
+      <video
+        src="/paingelzlogo.mov"
+        className="w-[50%]"
+        autoPlay
+        muted
+        loop
+        playsInline
+      />
       <div className="relative w-[50%] text-center border">
         <div
           style={{ width: `${barWidth}` }}
