@@ -375,7 +375,7 @@ const Splash = () => {
   return (
     <div className="w-full relative h-screen flex flex-col space-y-2 items-center justify-center bg-black">
       <video
-        src="/paingelzlogo.mov"
+        src="/paingelzlogo.mp4"
         className="w-[50%]"
         autoPlay
         muted
