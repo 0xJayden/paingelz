@@ -55,10 +55,10 @@ export default function Home() {
   useEffect(() => {
     setTimeout(() => {
       setOpenSplash(false);
-    }, 3200);
+    }, 5200);
     setTimeout(() => {
       setOpenMint(true);
-    }, 6000);
+    }, 7000);
     document.addEventListener("click", generateDots);
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
@@ -230,7 +230,7 @@ const MintWindow = ({
         <div className="flex w-full justify-center items-center">
           <video
             className="h-full w-[150px]"
-            src="/paingelzlogo.mov"
+            src="/paingelzlogo.mp4"
             muted
             autoPlay
             loop
@@ -353,23 +353,32 @@ const Splash = () => {
 
   useEffect(() => {
     setTimeout(() => {
+      setBarWidth("5%");
+    }, 200);
+    setTimeout(() => {
       setBarWidth("10%");
     }, 500);
+    setTimeout(() => {
+      setBarWidth("15%");
+    }, 800);
     setTimeout(() => {
       setBarWidth("20%");
     }, 1500);
     setTimeout(() => {
-      setBarWidth("50%");
-    }, 2000);
-    setTimeout(() => {
-      setBarWidth("70%");
-    }, 2200);
-    setTimeout(() => {
-      setBarWidth("90%");
+      setBarWidth("30%");
     }, 2500);
     setTimeout(() => {
+      setBarWidth("50%");
+    }, 3500);
+    setTimeout(() => {
+      setBarWidth("70%");
+    }, 4000);
+    setTimeout(() => {
+      setBarWidth("90%");
+    }, 4500);
+    setTimeout(() => {
       setBarWidth("100%");
-    }, 2900);
+    }, 4800);
   }, []);
 
   return (
