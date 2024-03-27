@@ -13,7 +13,7 @@ export default function Home() {
   const [openMint, setOpenMint] = useState(false);
   const [dots, setDots] = useState<Array<Dot>>([]);
   const [openSplash, setOpenSplash] = useState(true);
-  const [audio] = useState(new Audio("/music.mp3"));
+  const [audio, setAudio] = useState<HTMLAudioElement>();
   const [playing, setPlaying] = useState(false);
 
   const requestRef = useRef<number>(0);
@@ -60,12 +60,14 @@ export default function Home() {
   };
 
   useEffect(() => {
+    setAudio(new Audio("/music.mp3"));
     document.addEventListener("click", generateDots);
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
   useEffect(() => {
+    if (!audio) return;
     if (playing) {
       audio.play();
     } else {
