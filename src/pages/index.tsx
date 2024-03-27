@@ -136,6 +136,8 @@ const MintWindow = ({
   setOpenMint: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [dots, setDots] = useState<Array<Dot>>([]);
+  const [audio] = useState(new Audio("/music.mp3"));
+  const [playing, setPlaying] = useState(false);
 
   const dotContainerRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
@@ -210,6 +212,15 @@ const MintWindow = ({
     setDots(newDots);
   };
 
+  const mint = () => {};
+
+  const { connected } = useWallet();
+
+  useEffect(() => {
+    if (connected) audio.play();
+    else audio.pause();
+  }, [connected]);
+
   return (
     <div className="absolute animate-open z-20 text-[#00eeee]">
       <div
@@ -248,7 +259,7 @@ const MintWindow = ({
           />
         </div>
         <button
-          onClick={() => generateDots()}
+          onClick={mint}
           className="absolute left-0 w-20 mx-auto right-0 bottom-[20%] z-30 border border-[#00eeee] p-1 px-5"
         >
           Mint
