@@ -5,6 +5,7 @@ import { mdiClose } from "@mdi/js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import Head from "next/head";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,7 +13,7 @@ export default function Home() {
   const [openMint, setOpenMint] = useState(false);
   const [dots, setDots] = useState<Array<Dot>>([]);
   const [openSplash, setOpenSplash] = useState(true);
-  // const [audio] = useState(new Audio("/music.mp3"));
+  const [audio] = useState(new Audio("/music.mp3"));
   const [playing, setPlaying] = useState(false);
 
   const requestRef = useRef<number>(0);
@@ -64,18 +65,24 @@ export default function Home() {
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
-  // useEffect(() => {
-  //   if (playing) {
-  //     audio.play();
-  //   } else {
-  //     audio.pause();
-  //   }
-  // }, [playing]);
+  useEffect(() => {
+    if (playing) {
+      audio.play();
+    } else {
+      audio.pause();
+    }
+  }, [playing]);
 
   return (
     <main
       className={`absolute flex inset-0 overflow-hidden text-white bg-[#99ccff] flex-col items-center justify-between ${inter.className}`}
     >
+      <Head>
+        <title>Paingelz</title>
+        <meta name="description" content="Feel the pain. Mint your Paingelz." />
+        <meta name="title" content="Paingelz" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       {openSplash ? (
         <Splash
           setOpenSplash={setOpenSplash}
