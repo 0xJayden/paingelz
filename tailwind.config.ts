@@ -19,9 +19,14 @@ const config: Config = {
         "0%": { transform: "translateY(100%)", scale: "0" },
         "100%": { transform: "translateY(0)", scale: "1" },
       },
+      fadeUp: {
+        "0%": { opacity: "0", transform: "translateY(20px)" },
+        "100%": { opacity: "1", transform: "translateY(0)" },
+      },
     },
     animation: {
       open: "open 0.5s ease-in-out",
+      fadeUp: "fadeUp 0.5s ease-in-out",
     },
   },
   plugins: [],

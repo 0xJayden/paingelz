@@ -12,15 +12,19 @@ export default function Home() {
   const [openMint, setOpenMint] = useState(false);
   const [dots, setDots] = useState<Array<Dot>>([]);
   const [openSplash, setOpenSplash] = useState(true);
+  // const [audio] = useState(new Audio("/music.mp3"));
+  const [playing, setPlaying] = useState(false);
 
   const requestRef = useRef<number>(0);
 
   const animate = () => {
     setDots((prev) => {
       return prev.map((dot) => {
-        let newX = dot.x + dot.xSpeed;
+        if (!dot.xAcceleration) return dot;
+        let newX = dot.x + dot.xSpeed * dot.xAcceleration;
         let newY = dot.y + dot.ySpeed * dot.yAcceleration;
         let newYAcceleration = dot.yAcceleration + 0.02;
+        let newXAcceleration = dot.xAcceleration + 0.02;
 
         return {
           x: newX,
@@ -28,6 +32,7 @@ export default function Home() {
           xSpeed: dot.xSpeed,
           ySpeed: dot.ySpeed,
           yAcceleration: newYAcceleration,
+          xAcceleration: newXAcceleration,
           size: dot.size,
           color: dot.color,
         };
@@ -38,13 +43,14 @@ export default function Home() {
 
   const generateDots = (e: MouseEvent) => {
     const newDots: Dot[] = [];
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 50; i++) {
       newDots.push({
         x: e.clientX + 10,
         y: e.clientY + 10,
-        xSpeed: Math.random() * (i % 2 === 0 ? 2 : -2),
-        ySpeed: Math.random() * 2,
+        xSpeed: Math.random() * (Math.random() * 2 > 1 ? 2 : -2),
+        ySpeed: Math.random() * (Math.random() * 2 > 1 ? 2 : -2),
         yAcceleration: 1.01,
+        xAcceleration: 1.01,
         size: 2,
         color: colors[Math.floor(Math.random() * colors.length)],
       });
@@ -53,43 +59,47 @@ export default function Home() {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setOpenSplash(false);
-    }, 5200);
-    setTimeout(() => {
-      setOpenMint(true);
-    }, 7000);
     document.addEventListener("click", generateDots);
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
+
+  // useEffect(() => {
+  //   if (playing) {
+  //     audio.play();
+  //   } else {
+  //     audio.pause();
+  //   }
+  // }, [playing]);
 
   return (
     <main
       className={`absolute flex inset-0 overflow-hidden text-white bg-[#99ccff] flex-col items-center justify-between ${inter.className}`}
     >
       {openSplash ? (
-        <Splash />
+        <Splash
+          setOpenSplash={setOpenSplash}
+          setPlaying={setPlaying}
+          setOpenMint={setOpenMint}
+        />
       ) : (
         <>
-          <div className="absolute z-10 inset-0">
-            {dots.map((dot, i) => {
-              return (
-                <div
-                  key={i}
-                  id="dot"
-                  style={{
-                    top: dot.y + "px",
-                    left: dot.x + "px",
-                    backgroundColor: dot.color,
-                    height: dot.size + "px",
-                    width: dot.size + "px",
-                  }}
-                  className={`absolute rounded-full`}
-                ></div>
-              );
-            })}
-          </div>
+          {dots.map((dot, i) => {
+            return (
+              <div
+                key={i}
+                id="dot"
+                style={{
+                  top: dot.y + "px",
+                  left: dot.x + "px",
+                  backgroundColor: dot.color,
+                  height: dot.size + "px",
+                  width: dot.size + "px",
+                }}
+                className={`absolute rounded-full z-50`}
+              ></div>
+            );
+          })}
           <div className="absolute inset-0">
             <Image
               src={"/bgfinal.png"}
@@ -114,6 +124,7 @@ type Dot = {
   xSpeed: number;
   ySpeed: number;
   yAcceleration: number;
+  xAcceleration?: number;
   size: number;
   color: string;
 };
@@ -136,8 +147,6 @@ const MintWindow = ({
   setOpenMint: Dispatch<SetStateAction<boolean>>;
 }) => {
   const [dots, setDots] = useState<Array<Dot>>([]);
-  const [audio] = useState(new Audio("/music.mp3"));
-  const [playing, setPlaying] = useState(false);
 
   const dotContainerRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
@@ -213,13 +222,6 @@ const MintWindow = ({
   };
 
   const mint = () => {};
-
-  const { connected } = useWallet();
-
-  useEffect(() => {
-    if (connected) audio.play();
-    else audio.pause();
-  }, [connected]);
 
   return (
     <div className="absolute animate-open z-20 text-[#00eeee]">
@@ -359,8 +361,19 @@ const BottomNavbar = ({
   );
 };
 
-const Splash = () => {
+const Splash = ({
+  setOpenSplash,
+  setPlaying,
+  setOpenMint,
+}: {
+  setOpenSplash: Dispatch<SetStateAction<boolean>>;
+  setPlaying: Dispatch<SetStateAction<boolean>>;
+  setOpenMint: Dispatch<SetStateAction<boolean>>;
+}) => {
   const [barWidth, setBarWidth] = useState("0%");
+  const [dots, setDots] = useState<Array<Dot>>([]);
+
+  const requestRef = useRef<number>(0);
 
   useEffect(() => {
     setTimeout(() => {
@@ -389,11 +402,79 @@ const Splash = () => {
     }, 4500);
     setTimeout(() => {
       setBarWidth("100%");
+      generateDots();
+      requestRef.current = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(requestRef.current);
     }, 4800);
   }, []);
 
+  const animate = () => {
+    setDots((prev) => {
+      return prev.map((dot) => {
+        if (!dot.xAcceleration) return dot;
+        let newX = dot.x + dot.xSpeed * dot.xAcceleration;
+        let newY = dot.y + dot.ySpeed * dot.yAcceleration;
+        let newYAcceleration = dot.yAcceleration + 0.02;
+        let newXAcceleration = dot.xAcceleration + 0.02;
+
+        return {
+          x: newX,
+          y: newY,
+          xSpeed: dot.xSpeed,
+          ySpeed: dot.ySpeed,
+          yAcceleration: newYAcceleration,
+          xAcceleration: newXAcceleration,
+          size: dot.size,
+          color: dot.color,
+        };
+      });
+    });
+    requestRef.current = requestAnimationFrame(animate);
+  };
+
+  const generateDots = () => {
+    const newDots: Dot[] = [];
+    for (let i = 0; i < 50; i++) {
+      newDots.push({
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+        xSpeed: Math.random() * (Math.random() * 2 > 1 ? 2 : -2),
+        ySpeed: Math.random() * (Math.random() * 2 > 1 ? 2 : -2),
+        yAcceleration: 1.01,
+        xAcceleration: 1.01,
+        size: 3,
+        color: colors[Math.floor(Math.random() * colors.length)],
+      });
+    }
+    setDots(newDots);
+  };
+
+  const openGates = () => {
+    setOpenSplash(false);
+    setPlaying(true);
+    setTimeout(() => {
+      setOpenMint(true);
+    }, 2000);
+  };
+
   return (
     <div className="w-full relative h-screen flex flex-col space-y-2 items-center justify-center bg-black">
+      {dots.map((dot, i) => {
+        return (
+          <div
+            key={i}
+            id="dot"
+            style={{
+              top: dot.y + "px",
+              left: dot.x + "px",
+              backgroundColor: dot.color,
+              height: dot.size + "px",
+              width: dot.size + "px",
+            }}
+            className={`absolute rounded-full`}
+          ></div>
+        );
+      })}
       <video
         src="/paingelzlogo.mp4"
         className="w-[50%]"
@@ -411,6 +492,19 @@ const Splash = () => {
           {barWidth === "100%" ? `Let's gooo!` : "Loading..."}
         </p>
       </div>
+      {barWidth === "100%" && (
+        <div className="flex justify-center items-center">
+          <div className="absolute animate-fadeUp flex justify-center bottom-[120px] items-center">
+            <Image src={"/wings.png"} alt="wings" width={600} height={400} />
+          </div>
+          <button
+            onClick={openGates}
+            className="border absolute animate-fadeUp z-10 bg-black bottom-[200px] p-2 px-4"
+          >
+            Open the Gates
+          </button>
+        </div>
+      )}
     </div>
   );
 };
