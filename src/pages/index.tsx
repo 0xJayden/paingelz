@@ -233,12 +233,12 @@ const MintWindow = ({
   const mint = () => {};
 
   return (
-    <div className="absolute animate-open z-20 text-[#00eeee]">
+    <div className="absolute animate-open inset-0 h-[380px] sm:h-[50%] mx-auto my-auto w-[75%] lg:h-[60%] z-20 text-[#00eeee]">
       <div
         ref={dotContainerRef}
-        className="flex flex-col h-full relative border-2 rounded bg-black"
+        className="flex flex-col h-full justify-center items-center relative border-2 rounded bg-black"
       >
-        <div className="items-center z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#ffffc9] via-[#eeeeee] to-[#ffffc9]">
+        <div className="items-center absolute z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#ffffc9] via-[#eeeeee] to-[#ffffc9]">
           <button
             onClick={() => setOpenMint(false)}
             className="bg-red-500 rounded-full h-full aspect-square flex justify-center items-center"
@@ -259,10 +259,10 @@ const MintWindow = ({
             playsInline
           />
         </div>
-        <div className="relative z-20 h-full w-full">
+        <div className="relative z-20 max-w-[1400px] w-full">
           <video
             className="h-full w-full"
-            src="/paingelzvid.mp4"
+            src="/paingelz.mp4"
             muted
             autoPlay
             loop
@@ -294,9 +294,6 @@ const MintWindow = ({
             </div>
           );
         })}
-        <div className="p-2 z-10 flex items-center justify-center flex-col border border-dashed py-4 border-[#00eeee] space-y-2">
-          <p>Feel the pain</p>
-        </div>
       </div>
     </div>
   );
