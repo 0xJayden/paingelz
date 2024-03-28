@@ -15,6 +15,8 @@ export default function Home() {
   const [openSplash, setOpenSplash] = useState(true);
   const [audio, setAudio] = useState<HTMLAudioElement>();
   const [playing, setPlaying] = useState(false);
+  const [openMap, setOpenMap] = useState(false);
+  const [focusedWindow, setFocusedWindow] = useState<"mint" | "map">("mint");
 
   const requestRef = useRef<number>(0);
 
@@ -83,7 +85,7 @@ export default function Home() {
         <title>Paingelz</title>
         <meta name="description" content="Feel the pain. Mint your Paingelz." />
         <meta name="title" content="Paingelz" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/faviconnew.ico" />
       </Head>
       {openSplash ? (
         <Splash
@@ -118,9 +120,34 @@ export default function Home() {
               alt="bga"
             />
           </div>
-          <IconContainer setOpenMint={setOpenMint} openMint={openMint} />
-          {openMint && <MintWindow setOpenMint={setOpenMint} />}
-          <BottomNavbar setOpenMint={setOpenMint} openMint={openMint} />
+          <IconContainer
+            setOpenMint={setOpenMint}
+            openMint={openMint}
+            setOpenMap={setOpenMap}
+            openMap={openMap}
+            setFocusedWindow={setFocusedWindow}
+          />
+          {openMint && (
+            <MintWindow
+              setOpenMint={setOpenMint}
+              setFocusedWindow={setFocusedWindow}
+              focusedWindow={focusedWindow}
+            />
+          )}
+          {openMap && (
+            <MapWindow
+              setOpenMap={setOpenMap}
+              setFocusedWindow={setFocusedWindow}
+              focusedWindow={focusedWindow}
+            />
+          )}
+          <BottomNavbar
+            setOpenMint={setOpenMint}
+            openMint={openMint}
+            setOpenMap={setOpenMap}
+            openMap={openMap}
+            setFocusedWindow={setFocusedWindow}
+          />
         </>
       )}
     </main>
@@ -152,8 +179,12 @@ const colors = [
 
 const MintWindow = ({
   setOpenMint,
+  setFocusedWindow,
+  focusedWindow,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
+  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map">>;
+  focusedWindow: "mint" | "map";
 }) => {
   const [dots, setDots] = useState<Array<Dot>>([]);
 
@@ -233,11 +264,18 @@ const MintWindow = ({
   const mint = () => {};
 
   return (
-    <div className="absolute animate-open inset-0 h-[380px] sm:h-[50%] mx-auto my-auto w-[75%] lg:h-[60%] z-20 text-[#00eeee]">
+    <div
+      className={`absolute animate-open inset-0 h-[380px] sm:h-[50%] mx-auto my-auto w-[75%] lg:h-[60%] text-[#00eeee]`}
+      style={{ zIndex: focusedWindow === "mint" ? 30 : 20 }}
+    >
       <div
         ref={dotContainerRef}
         className="flex flex-col h-full justify-center items-center relative border-2 rounded bg-black"
       >
+        <button
+          onClick={() => setFocusedWindow("mint")}
+          className="absolute z-30 inset-0"
+        ></button>
         <div className="items-center absolute z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#ffffc9] via-[#eeeeee] to-[#ffffc9]">
           <button
             onClick={() => setOpenMint(false)}
@@ -271,7 +309,7 @@ const MintWindow = ({
         </div>
         <button
           onClick={mint}
-          className="absolute left-0 w-20 mx-auto right-0 bottom-[20%] z-30 border border-[#00eeee] p-1 px-5"
+          className="absolute left-0 w-20 mx-auto right-0 bottom-[20%] z-20 border border-[#00eeee] p-1 px-5"
         >
           Mint
         </button>
@@ -302,13 +340,28 @@ const MintWindow = ({
 const IconContainer = ({
   setOpenMint,
   openMint,
+  setOpenMap,
+  openMap,
+  setFocusedWindow,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
   openMint: boolean;
+  setOpenMap: Dispatch<SetStateAction<boolean>>;
+  openMap: boolean;
+  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map">>;
 }) => {
   return (
-    <div className="absolute p-4 inset-0 z-10">
-      <MintIcon setOpenMint={setOpenMint} openMint={openMint} />
+    <div className="absolute space-y-4 p-4 inset-0 z-10">
+      <MintIcon
+        setOpenMint={setOpenMint}
+        openMint={openMint}
+        setFocusedWindow={setFocusedWindow}
+      />
+      <MapIcon
+        setOpenMap={setOpenMap}
+        openMap={openMap}
+        setFocusedWindow={setFocusedWindow}
+      />
     </div>
   );
 };
@@ -316,13 +369,20 @@ const IconContainer = ({
 const MintIcon = ({
   setOpenMint,
   openMint,
+  setFocusedWindow,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
   openMint: boolean;
+  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map">>;
 }) => {
+  const openWindow = () => {
+    setOpenMint(true);
+    setFocusedWindow("mint");
+  };
+
   return (
     <button
-      onClick={() => setOpenMint(!openMint)}
+      onClick={openWindow}
       className="h-20 flex items-center justify-center flex-col w-20"
     >
       <Image
@@ -337,20 +397,67 @@ const MintIcon = ({
   );
 };
 
+const MapIcon = ({
+  setOpenMap,
+  openMap,
+  setFocusedWindow,
+}: {
+  setOpenMap: Dispatch<SetStateAction<boolean>>;
+  openMap: boolean;
+  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map">>;
+}) => {
+  const openWindow = () => {
+    setOpenMap(true);
+    setFocusedWindow("map");
+  };
+
+  return (
+    <button
+      onClick={openWindow}
+      className="h-20 flex items-center justify-center flex-col w-20"
+    >
+      <Image
+        src={"/mapicon.png"}
+        width={100}
+        height={100}
+        alt="mapicon"
+        className="w-10 h-10"
+      />
+      <p className="text-sm drop-shadow text-center">Paingelz World</p>
+    </button>
+  );
+};
+
 const BottomNavbar = ({
   setOpenMint,
   openMint,
+  setOpenMap,
+  openMap,
+  setFocusedWindow,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
   openMint: boolean;
+  setOpenMap: Dispatch<SetStateAction<boolean>>;
+  openMap: boolean;
+  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map">>;
 }) => {
+  const openWindow = (window: "mint" | "map") => {
+    if (window === "mint") {
+      setOpenMint(!openMint);
+      setFocusedWindow("mint");
+    } else {
+      setOpenMap(!openMap);
+      setFocusedWindow("map");
+    }
+  };
+
   return (
     <div className="absolute bottom-0 p-2 z-20 left-0 right-0 h-20">
       <div className="bg-[#20201d]/70 space-x-2 px-2 backdrop-blur h-full rounded-xl flex p-1 items-center">
         <WalletMultiButton />
         <div className="h-full border border-[#555555]"></div>
         <button
-          onClick={() => setOpenMint(!openMint)}
+          onClick={() => openWindow("mint")}
           className="flex flex-col items-center space-y-1"
         >
           <Image
@@ -361,6 +468,19 @@ const BottomNavbar = ({
             className="w-10 h-10"
           />
           {openMint && <div className="rounded-full bg-white h-1 w-1"></div>}
+        </button>
+        <button
+          onClick={() => openWindow("map")}
+          className="flex flex-col items-center space-y-1 rounded-full"
+        >
+          <Image
+            className="h-10 w-10"
+            src={"/mapicon.png"}
+            alt="mapicon"
+            width={100}
+            height={100}
+          />
+          {openMap && <div className="rounded-full bg-white h-1 w-1"></div>}
         </button>
       </div>
     </div>
@@ -511,6 +631,52 @@ const Splash = ({
           </button>
         </div>
       )}
+    </div>
+  );
+};
+
+const MapWindow = ({
+  setOpenMap,
+  setFocusedWindow,
+  focusedWindow,
+}: {
+  setOpenMap: Dispatch<SetStateAction<boolean>>;
+  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map">>;
+  focusedWindow: "mint" | "map";
+}) => {
+  return (
+    <div
+      className={`absolute sm:h-[50%] lg:h-[60%] h-[380px] animate-open w-[75%] top-0 ml-16 bottom-16 my-auto`}
+      style={{ zIndex: focusedWindow === "map" ? 30 : 20 }}
+    >
+      <div className="flex flex-col h-full justify-center items-center relative border-2 rounded bg-black">
+        <button
+          onClick={() => setFocusedWindow("map")}
+          className="absolute z-30 inset-0"
+        ></button>
+        <div className="items-center absolute z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#c9daff] via-[#eeeeee] to-[#c9daff]">
+          <button
+            onClick={() => setOpenMap(false)}
+            className="bg-red-500 rounded-full h-full aspect-square flex justify-center items-center"
+          >
+            <Icon path={mdiClose} className="h-3 text-black" />
+          </button>
+          <p className="text-white text-sm drop-shadow font-bold">
+            Paingelz World
+          </p>
+        </div>
+        <h2 className="text-2xl font-bold">Painglez World</h2>
+        <div className="relative z-20 max-w-[1400px] w-full">
+          <video
+            className="h-full w-full"
+            src="/mapvid.mp4"
+            muted
+            autoPlay
+            loop
+            playsInline
+          />
+        </div>
+      </div>
     </div>
   );
 };
