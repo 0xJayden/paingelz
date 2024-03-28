@@ -520,19 +520,19 @@ const Splash = ({
       setBarWidth("15%");
     }, 800);
     setTimeout(() => {
-      setBarWidth("20%");
+      setBarWidth("22%");
     }, 1500);
     setTimeout(() => {
-      setBarWidth("30%");
+      setBarWidth("37%");
     }, 2500);
     setTimeout(() => {
       setBarWidth("50%");
     }, 3500);
     setTimeout(() => {
-      setBarWidth("70%");
+      setBarWidth("78%");
     }, 4000);
     setTimeout(() => {
-      setBarWidth("90%");
+      setBarWidth("91%");
     }, 4500);
     setTimeout(() => {
       setBarWidth("100%");
@@ -631,17 +631,17 @@ const Splash = ({
           className="absolute bg-cyan-500 h-full"
         ></div>
         <p className="relative">
-          {barWidth === "100%" ? `Let's gooo!` : "Loading..."}
+          {barWidth} {barWidth === "100%" ? "Done" : "Loading..."}
         </p>
       </div>
       {barWidth === "100%" && (
         <div className="flex justify-center items-center">
-          <div className="absolute animate-fadeUp flex justify-center bottom-[120px] items-center">
+          <div className="absolute animate-fadeUp flex justify-center bottom-[150px] items-center">
             <Image src={"/wings.png"} alt="wings" width={600} height={400} />
           </div>
           <button
             onClick={openGates}
-            className="border absolute animate-fadeUp z-10 bg-black bottom-[200px] p-2 px-4"
+            className="border absolute animate-fadeUp z-10 bg-black bottom-[230px] p-2 px-4"
           >
             Open the Gates
           </button>
