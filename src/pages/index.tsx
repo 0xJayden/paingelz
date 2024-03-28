@@ -113,11 +113,19 @@ export default function Home() {
           })}
           <div className="absolute inset-0">
             <Image
-              src={"/bgfinal.png"}
+              src={"/bgfinalnopaingelz.png"}
               className="w-full h-full object-cover"
               width={1000}
               height={1000}
               alt="bga"
+            />
+          </div>
+          <div className="absolute bottom-20">
+            <Image
+              src={"/logo.png"}
+              width={400}
+              height={400}
+              alt="paingelzlogo"
             />
           </div>
           <IconContainer
@@ -584,7 +592,7 @@ const Splash = ({
   };
 
   return (
-    <div className="w-full relative h-screen flex flex-col space-y-2 items-center justify-center bg-black">
+    <div className="w-full relative h-screen pb-20 flex flex-col space-y-2 items-center justify-center bg-black">
       {dots.map((dot, i) => {
         return (
           <div
@@ -604,6 +612,14 @@ const Splash = ({
       <video
         src="/paingelzlogo.mp4"
         className="w-[50%]"
+        autoPlay
+        muted
+        loop
+        playsInline
+      />
+      <video
+        src="/map.mp4"
+        className="w-[50%] pb-4"
         autoPlay
         muted
         loop
