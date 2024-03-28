@@ -276,14 +276,14 @@ const MintWindow = ({
           onClick={() => setFocusedWindow("mint")}
           className="absolute z-30 inset-0"
         ></button>
+        <button
+          onClick={() => setOpenMint(false)}
+          className="bg-red-500 rounded-full h-4 aspect-square flex justify-center items-center z-40 absolute top-1 left-1"
+        >
+          <Icon path={mdiClose} className="h-3 text-black" />
+        </button>
         <div className="items-center absolute z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#ffffc9] via-[#eeeeee] to-[#ffffc9]">
-          <button
-            onClick={() => setOpenMint(false)}
-            className="bg-red-500 rounded-full h-full aspect-square flex justify-center items-center"
-          >
-            <Icon path={mdiClose} className="h-3 text-black" />
-          </button>
-          <p className="text-white text-sm drop-shadow font-bold">
+          <p className="text-white pl-6 text-sm drop-shadow font-bold">
             Paingelz Mint
           </p>
         </div>
@@ -654,14 +654,14 @@ const MapWindow = ({
           onClick={() => setFocusedWindow("map")}
           className="absolute z-30 inset-0"
         ></button>
+        <button
+          onClick={() => setOpenMap(false)}
+          className="bg-red-500 rounded-full h-4 aspect-square flex justify-center items-center z-40 absolute top-1 left-1"
+        >
+          <Icon path={mdiClose} className="h-3 text-black" />
+        </button>
         <div className="items-center absolute z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#c9daff] via-[#eeeeee] to-[#c9daff]">
-          <button
-            onClick={() => setOpenMap(false)}
-            className="bg-red-500 rounded-full h-full aspect-square flex justify-center items-center"
-          >
-            <Icon path={mdiClose} className="h-3 text-black" />
-          </button>
-          <p className="text-white text-sm drop-shadow font-bold">
+          <p className="text-white pl-6 text-sm drop-shadow font-bold">
             Paingelz World
           </p>
         </div>
