@@ -122,7 +122,7 @@ export default function Home() {
           </div>
           <div className="absolute bottom-20">
             <Image
-              src={"/logo.png"}
+              src={"/paingelzlogo.png"}
               width={400}
               height={400}
               alt="paingelzlogo"
@@ -592,7 +592,7 @@ const Splash = ({
   };
 
   return (
-    <div className="w-full relative h-screen pb-20 flex flex-col space-y-2 items-center justify-center bg-black">
+    <div className="w-full relative h-screen pb-20 md:justify-start flex flex-col space-y-2 items-center justify-center bg-black">
       {dots.map((dot, i) => {
         return (
           <div
@@ -611,7 +611,7 @@ const Splash = ({
       })}
       <video
         src="/paingelzlogo.mp4"
-        className="w-[50%]"
+        className="w-[50%] max-w-[700px]"
         autoPlay
         muted
         loop
@@ -619,7 +619,7 @@ const Splash = ({
       />
       <video
         src="/map.mp4"
-        className="w-[50%] pb-4"
+        className="w-[50%] max-w-[700px] pb-4"
         autoPlay
         muted
         loop
@@ -636,12 +636,12 @@ const Splash = ({
       </div>
       {barWidth === "100%" && (
         <div className="flex justify-center items-center">
-          <div className="absolute animate-fadeUp flex justify-center bottom-[150px] items-center">
+          <div className="absolute animate-fadeUp flex justify-center bottom-[100px] items-center">
             <Image src={"/wings.png"} alt="wings" width={600} height={400} />
           </div>
           <button
             onClick={openGates}
-            className="border absolute animate-fadeUp z-10 bg-black bottom-[230px] p-2 px-4"
+            className="border absolute animate-fadeUp z-10 bg-black bottom-[180px] p-2 px-4"
           >
             Open the Gates
           </button>
