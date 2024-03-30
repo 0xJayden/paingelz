@@ -6,6 +6,23 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Head from "next/head";
+import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
+import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
+import {
+  fetchCandyMachine,
+  mintV2,
+  mplCandyMachine,
+  safeFetchCandyGuard,
+} from "@metaplex-foundation/mpl-candy-machine";
+import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
+import {
+  generateSigner,
+  publicKey,
+  some,
+  transactionBuilder,
+} from "@metaplex-foundation/umi";
+import { setComputeUnitLimit } from "@metaplex-foundation/mpl-toolbox";
+import { base58 } from "@metaplex-foundation/umi/serializers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -195,9 +212,17 @@ const MintWindow = ({
   focusedWindow: "mint" | "map";
 }) => {
   const [dots, setDots] = useState<Array<Dot>>([]);
+  const [price, setPrice] = useState<number>();
 
   const dotContainerRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
+
+  const wallet = useWallet();
+
+  const umi = createUmi("https://api.devnet.solana.com")
+    .use(walletAdapterIdentity(wallet))
+    .use(mplCandyMachine())
+    .use(mplTokenMetadata());
 
   const animate = () => {
     setDots((prev) => {
@@ -247,6 +272,7 @@ const MintWindow = ({
   };
 
   useEffect(() => {
+    getPrice();
     generateDots();
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
@@ -269,7 +295,68 @@ const MintWindow = ({
     setDots(newDots);
   };
 
-  const mint = () => {};
+  const getPrice = async () => {
+    const candyMachine = await fetchCandyMachine(
+      umi,
+      publicKey("9FqygJoSDwh3kw31koPgoLkLKLaqh38tdebthABeG4C4")
+    );
+
+    const candyGuard = await safeFetchCandyGuard(
+      umi,
+      candyMachine.mintAuthority
+    );
+
+    setPrice(
+      // @ts-ignore
+      Number(candyGuard?.guards.solPayment.value.lamports.basisPoints) / 10 ** 9
+    );
+  };
+
+  const mint = async () => {
+    if (!wallet.publicKey) return console.log("No wallet connected");
+
+    const candyMachine = await fetchCandyMachine(
+      umi,
+      publicKey("9FqygJoSDwh3kw31koPgoLkLKLaqh38tdebthABeG4C4")
+    );
+
+    const candyGuard = await safeFetchCandyGuard(
+      umi,
+      candyMachine.mintAuthority
+    );
+
+    try {
+      const nftMint = generateSigner(umi);
+
+      const transaction = transactionBuilder()
+        .add(setComputeUnitLimit(umi, { units: 800000 }))
+        .add(
+          mintV2(umi, {
+            candyMachine: candyMachine.publicKey,
+            candyGuard: candyGuard?.publicKey,
+            nftMint,
+            collectionMint: candyMachine.collectionMint,
+            collectionUpdateAuthority: candyMachine.authority,
+            mintArgs: {
+              solPayment: some({
+                destination: publicKey(
+                  "GgKt7kZNTQmi8J3TPPay7bk2G1VtJsV8gipfzyGajm8Z"
+                ),
+              }),
+            },
+          })
+        );
+
+      const { signature } = await transaction.sendAndConfirm(umi, {
+        confirm: { commitment: "confirmed" },
+      });
+
+      const txid = base58.deserialize(signature)[0];
+      console.log(`Minted NFT with txid: ${txid}`);
+    } catch (error) {
+      console.error(`Error minting NFT: ${error}`);
+    }
+  };
 
   return (
     <div
@@ -315,9 +402,10 @@ const MintWindow = ({
             playsInline
           />
         </div>
+        <p>{price}</p>
         <button
           onClick={mint}
-          className="absolute left-0 w-20 mx-auto right-0 bottom-[20%] z-20 border border-[#00eeee] p-1 px-5"
+          className="absolute left-0 w-20 mx-auto right-0 bottom-[20%] z-30 border border-[#00eeee] p-1 px-5"
         >
           Mint
         </button>
