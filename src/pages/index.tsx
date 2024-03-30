@@ -360,7 +360,7 @@ const MintWindow = ({
 
   return (
     <div
-      className={`absolute animate-open inset-0 h-[380px] sm:h-[50%] mx-auto my-auto w-[75%] lg:h-[60%] text-[#00eeee]`}
+      className={`absolute animate-open inset-0 h-[60%] sm:h-[70%] overflow-hidden mx-auto my-auto w-[75%] text-[#00eeee]`}
       style={{ zIndex: focusedWindow === "mint" ? 30 : 20 }}
     >
       <div
@@ -392,7 +392,7 @@ const MintWindow = ({
             playsInline
           />
         </div>
-        <div className="relative z-20 max-w-[1400px] w-full">
+        <div className="relative h-[70%] z-20 max-w-[1400px] w-full">
           <video
             className="h-full w-full"
             src="/paingelz.mp4"
