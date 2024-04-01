@@ -63,7 +63,7 @@ export default function Home() {
 
   const generateDots = (e: MouseEvent) => {
     const newDots: Dot[] = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 20; i++) {
       newDots.push({
         x: e.clientX + 10,
         y: e.clientY + 10,
@@ -114,18 +114,24 @@ export default function Home() {
         <>
           {dots.map((dot, i) => {
             return (
-              <div
+              <img
                 key={i}
-                id="dot"
-                style={{
-                  top: dot.y + "px",
-                  left: dot.x + "px",
-                  backgroundColor: dot.color,
-                  height: dot.size + "px",
-                  width: dot.size + "px",
-                }}
-                className={`absolute rounded-full z-50`}
-              ></div>
+                src="/star.png"
+                style={{ top: dot.y + "px", left: dot.x + "px" }}
+                className="w-3 h-3 absolute z-50"
+              />
+              // <div
+              //   key={i}
+              //   id="dot"
+              //   style={{
+              //     top: dot.y + "px",
+              //     left: dot.x + "px",
+              //     backgroundColor: dot.color,
+              //     height: dot.size + "px",
+              //     width: dot.size + "px",
+              //   }}
+              //   className={`absolute rounded-full z-50`}
+              // ></div>
             );
           })}
           <div className="absolute inset-0">
@@ -213,6 +219,7 @@ const MintWindow = ({
 }) => {
   const [dots, setDots] = useState<Array<Dot>>([]);
   const [price, setPrice] = useState<number>();
+  const [clouds, setClouds] = useState<Array<Cloud>>([]);
 
   const dotContainerRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
@@ -225,6 +232,45 @@ const MintWindow = ({
     .use(mplTokenMetadata());
 
   const animate = () => {
+    setClouds((prev) => {
+      return prev.map((cloud) => {
+        let newX = cloud.x + cloud.xSpeed;
+        let newY = cloud.y + cloud.ySpeed;
+
+        if (
+          !dotContainerRef.current?.offsetWidth ||
+          !dotContainerRef.current?.offsetHeight
+        )
+          return cloud;
+
+        if (newX >= dotContainerRef.current.offsetWidth - 10 || newX <= 0) {
+          cloud.xSpeed = -cloud.xSpeed;
+        }
+
+        if (newY >= dotContainerRef.current.offsetHeight - 20 || newY <= 10) {
+          // cloud.yAcceleration = -cloud.yAcceleration;
+          cloud.ySpeed = -cloud.ySpeed;
+        }
+
+        if (newY > dotContainerRef.current?.offsetHeight || newY < 0) {
+          newY = Math.random() * dotContainerRef.current.offsetHeight - 20;
+        }
+
+        if (newX > dotContainerRef.current?.offsetWidth || newX < -5) {
+          newX = Math.random() * dotContainerRef.current?.offsetWidth - 10;
+        }
+
+        return {
+          x: newX,
+          y: newY,
+          size: cloud.size,
+          xSpeed: cloud.xSpeed,
+          ySpeed: cloud.ySpeed,
+          yAcceleration: cloud.yAcceleration,
+        };
+      });
+    });
+
     setDots((prev) => {
       return prev.map((dot) => {
         let newX = dot.x + dot.xSpeed;
@@ -274,6 +320,7 @@ const MintWindow = ({
   useEffect(() => {
     getPrice();
     generateDots();
+    generateClouds();
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
@@ -293,6 +340,21 @@ const MintWindow = ({
       });
     }
     setDots(newDots);
+  };
+
+  const generateClouds = () => {
+    const clouds: Cloud[] = [];
+    for (let i = 0; i < 50; i++) {
+      clouds.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        xSpeed: Math.random() * (Math.random() * 2 > 1 ? 1.5 : -1.5),
+        ySpeed: Math.random() * (Math.random() * 2 > 1 ? 1 : -1),
+        yAcceleration: 1.01 * (Math.random() * 2 > 1 ? 1 : -1),
+        size: 12,
+      });
+    }
+    setClouds(clouds);
   };
 
   const getPrice = async () => {
@@ -369,7 +431,7 @@ const MintWindow = ({
       >
         <button
           onClick={() => setFocusedWindow("mint")}
-          className="absolute z-30 inset-0"
+          className="absolute z-30 inset-0 cursor-default"
         ></button>
         <button
           onClick={() => setOpenMint(false)}
@@ -377,7 +439,7 @@ const MintWindow = ({
         >
           <Icon path={mdiClose} className="h-3 text-black" />
         </button>
-        <div className="items-center absolute z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#ffffc9] via-[#eeeeee] to-[#ffffc9]">
+        <div className="items-center absolute z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#c4c49a] via-[#eeeeee] to-[#c4c49a]">
           <p className="text-white pl-6 text-sm drop-shadow font-bold">
             Paingelz Mint
           </p>
@@ -411,21 +473,42 @@ const MintWindow = ({
         </button>
         {dots.map((dot, i) => {
           return (
-            <div
+            // <div
+            //   key={i}
+            //   id="dot"
+            //   style={{
+            //     top: dot.y + "px",
+            //     left: dot.x + "px",
+            //     // backgroundColor: dot.color,
+            //     color: dot.color,
+            //     height: dot.size + "px",
+            //     width: dot.size + "px",
+            //   }}
+            //   className={`absolute opacity-70 rounded-full`}
+            // >
+            //   *
+            // </div>
+            <img
               key={i}
-              id="dot"
+              src="/star.png"
+              style={{ top: dot.y + "px", left: dot.x + "px" }}
+              className="w-3 h-3 absolute"
+            />
+          );
+        })}
+        {clouds.map((cloud, i) => {
+          return (
+            <img
+              key={i}
+              className="absolute"
               style={{
-                top: dot.y + "px",
-                left: dot.x + "px",
-                // backgroundColor: dot.color,
-                color: dot.color,
-                height: dot.size + "px",
-                width: dot.size + "px",
+                top: cloud.y + "px",
+                left: cloud.x + "px",
+                height: cloud.size + "px",
+                width: cloud.size + "px",
               }}
-              className={`absolute opacity-70 rounded-full`}
-            >
-              *
-            </div>
+              src="/clouds.png"
+            />
           );
         })}
       </div>
@@ -583,6 +666,15 @@ const BottomNavbar = ({
   );
 };
 
+type Cloud = {
+  x: number;
+  y: number;
+  size: number;
+  xSpeed: number;
+  ySpeed: number;
+  yAcceleration: number;
+};
+
 const Splash = ({
   setOpenSplash,
   setPlaying,
@@ -594,6 +686,7 @@ const Splash = ({
 }) => {
   const [barWidth, setBarWidth] = useState("0%");
   const [dots, setDots] = useState<Array<Dot>>([]);
+  const [clouds, setClouds] = useState<Array<Cloud>>([]);
 
   const requestRef = useRef<number>(0);
 
@@ -625,12 +718,48 @@ const Splash = ({
     setTimeout(() => {
       setBarWidth("100%");
       generateDots();
+      generateClouds();
       requestRef.current = requestAnimationFrame(animate);
       return () => cancelAnimationFrame(requestRef.current);
     }, 4800);
   }, []);
 
   const animate = () => {
+    setClouds((prev) => {
+      return prev.map((cloud) => {
+        let newX = cloud.x + cloud.xSpeed;
+        let newY = cloud.y + cloud.ySpeed;
+        // let newYSpeed = (cloud.ySpeed * 1) / cloud.yAcceleration;
+        // let newYAcceleration = cloud.yAcceleration;
+
+        if (newX > window.innerWidth) {
+          newX = -cloud.size;
+          newY = Math.random() * window.innerHeight;
+        }
+        if (newX < 0 - cloud.size) {
+          newX = window.innerWidth;
+          newY = Math.random() * window.innerHeight;
+        }
+
+        // if (newYSpeed > 6) {
+        //   // newYSpeed = -newYSpeed;
+        //   newYAcceleration = newYAcceleration;
+        // } else if (newYSpeed <= 1) {
+        //   newYSpeed = -newYSpeed;
+        //   newYAcceleration = 1.01;
+        // }
+
+        return {
+          x: newX,
+          y: newY,
+          size: cloud.size,
+          xSpeed: cloud.xSpeed,
+          ySpeed: cloud.ySpeed,
+          yAcceleration: cloud.yAcceleration,
+        };
+      });
+    });
+
     setDots((prev) => {
       return prev.map((dot) => {
         if (!dot.xAcceleration) return dot;
@@ -671,6 +800,21 @@ const Splash = ({
     setDots(newDots);
   };
 
+  const generateClouds = () => {
+    const clouds: Cloud[] = [];
+    for (let i = 0; i < 10; i++) {
+      clouds.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        xSpeed: Math.random() * (Math.random() * 2 > 1 ? 1.5 : -1.5),
+        ySpeed: Math.random() * (Math.random() * 2 > 1 ? 1 : -1),
+        yAcceleration: 1.01 * (Math.random() * 2 > 1 ? 1 : -1),
+        size: Math.random() * 100 + 5,
+      });
+    }
+    setClouds(clouds);
+  };
+
   const openGates = () => {
     setOpenSplash(false);
     setPlaying(true);
@@ -681,20 +825,41 @@ const Splash = ({
 
   return (
     <div className="w-full relative h-screen pb-20 md:justify-start flex flex-col space-y-2 items-center justify-center bg-black">
+      {clouds.map((cloud, i) => {
+        return (
+          <img
+            key={i}
+            className="absolute"
+            style={{
+              top: cloud.y + "px",
+              left: cloud.x + "px",
+              height: cloud.size + "px",
+              width: cloud.size + "px",
+            }}
+            src="/clouds.png"
+          />
+        );
+      })}
       {dots.map((dot, i) => {
         return (
-          <div
+          // <div
+          //   key={i}
+          //   id="dot"
+          //   style={{
+          //     top: dot.y + "px",
+          //     left: dot.x + "px",
+          //     backgroundColor: dot.color,
+          //     height: dot.size + "px",
+          //     width: dot.size + "px",
+          //   }}
+          //   className={`absolute rounded-full`}
+          // ></div>
+          <img
             key={i}
-            id="dot"
-            style={{
-              top: dot.y + "px",
-              left: dot.x + "px",
-              backgroundColor: dot.color,
-              height: dot.size + "px",
-              width: dot.size + "px",
-            }}
-            className={`absolute rounded-full`}
-          ></div>
+            src="/star.png"
+            style={{ top: dot.y + "px", left: dot.x + "px" }}
+            className="w-5 h-5 absolute z-50"
+          />
         );
       })}
       <video
@@ -750,13 +915,13 @@ const MapWindow = ({
 }) => {
   return (
     <div
-      className={`absolute sm:h-[50%] lg:h-[60%] h-[380px] animate-open w-[75%] top-0 ml-16 bottom-16 my-auto`}
+      className={`absolute h-[60%] md:h-[70%] animate-open w-[75%] top-0 ml-16 bottom-16 my-auto`}
       style={{ zIndex: focusedWindow === "map" ? 30 : 20 }}
     >
       <div className="flex flex-col h-full justify-center items-center relative border-2 rounded bg-black">
         <button
           onClick={() => setFocusedWindow("map")}
-          className="absolute z-30 inset-0"
+          className="absolute cursor-default z-30 inset-0"
         ></button>
         <button
           onClick={() => setOpenMap(false)}
