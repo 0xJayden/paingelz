@@ -33,10 +33,11 @@ export default function Home() {
   const [audio, setAudio] = useState<HTMLAudioElement>();
   const [playing, setPlaying] = useState(false);
   const [openMap, setOpenMap] = useState(false);
-  const [focusedWindow, setFocusedWindow] = useState<"mint" | "map" | "game">(
-    "mint"
-  );
+  const [focusedWindow, setFocusedWindow] = useState<
+    "mint" | "map" | "game" | "personality"
+  >("mint");
   const [openGame, setOpenGame] = useState(false);
+  const [openPersonalityTest, setOpenPersonalityTest] = useState(false);
 
   const requestRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
@@ -170,6 +171,8 @@ export default function Home() {
             setFocusedWindow={setFocusedWindow}
             setOpenGame={setOpenGame}
             openGame={openGame}
+            setOpenPersonalityTest={setOpenPersonalityTest}
+            openPersonalityTest={openPersonalityTest}
           />
           {openMint && (
             <MintWindow
@@ -192,6 +195,13 @@ export default function Home() {
               focusedWindow={focusedWindow}
             />
           )}
+          {openPersonalityTest && (
+            <PersonalityTestWindow
+              setOpenPersonalityTest={setOpenPersonalityTest}
+              setFocusedWindow={setFocusedWindow}
+              focusedWindow={focusedWindow}
+            />
+          )}
           <BottomNavbar
             setOpenMint={setOpenMint}
             openMint={openMint}
@@ -200,6 +210,8 @@ export default function Home() {
             setFocusedWindow={setFocusedWindow}
             setOpenGame={setOpenGame}
             openGame={openGame}
+            setOpenPersonalityTest={setOpenPersonalityTest}
+            openPersonalityTest={openPersonalityTest}
           />
         </>
       )}
@@ -236,8 +248,10 @@ const MintWindow = ({
   focusedWindow,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map" | "game">>;
-  focusedWindow: "mint" | "map" | "game";
+  setFocusedWindow: Dispatch<
+    SetStateAction<"mint" | "map" | "game" | "personality">
+  >;
+  focusedWindow: "mint" | "map" | "game" | "personality";
 }) => {
   const [dots, setDots] = useState<Array<Dot>>([]);
   const [price, setPrice] = useState<number>();
@@ -549,30 +563,28 @@ const IconContainer = ({
   setFocusedWindow,
   setOpenGame,
   openGame,
+  setOpenPersonalityTest,
+  openPersonalityTest,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
   openMint: boolean;
   setOpenMap: Dispatch<SetStateAction<boolean>>;
   openMap: boolean;
-  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map" | "game">>;
+  setFocusedWindow: Dispatch<
+    SetStateAction<"mint" | "map" | "game" | "personality">
+  >;
   setOpenGame: Dispatch<SetStateAction<boolean>>;
   openGame: boolean;
+  setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
+  openPersonalityTest: boolean;
 }) => {
   return (
     <div className="absolute space-y-4 p-4 inset-0 z-10">
-      <MintIcon
-        setOpenMint={setOpenMint}
-        openMint={openMint}
-        setFocusedWindow={setFocusedWindow}
-      />
-      <MapIcon
-        setOpenMap={setOpenMap}
-        openMap={openMap}
-        setFocusedWindow={setFocusedWindow}
-      />
-      <GameIcon
-        setOpenGame={setOpenGame}
-        openGame={openGame}
+      <MintIcon setOpenMint={setOpenMint} setFocusedWindow={setFocusedWindow} />
+      <MapIcon setOpenMap={setOpenMap} setFocusedWindow={setFocusedWindow} />
+      <GameIcon setOpenGame={setOpenGame} setFocusedWindow={setFocusedWindow} />
+      <PersonalityIcon
+        setOpenPersonalityTest={setOpenPersonalityTest}
         setFocusedWindow={setFocusedWindow}
       />
     </div>
@@ -581,12 +593,12 @@ const IconContainer = ({
 
 const MintIcon = ({
   setOpenMint,
-  openMint,
   setFocusedWindow,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
-  openMint: boolean;
-  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map" | "game" | "game">>;
+  setFocusedWindow: Dispatch<
+    SetStateAction<"mint" | "map" | "game" | "personality">
+  >;
 }) => {
   const openWindow = () => {
     setOpenMint(true);
@@ -612,12 +624,12 @@ const MintIcon = ({
 
 const MapIcon = ({
   setOpenMap,
-  openMap,
   setFocusedWindow,
 }: {
   setOpenMap: Dispatch<SetStateAction<boolean>>;
-  openMap: boolean;
-  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map" | "game">>;
+  setFocusedWindow: Dispatch<
+    SetStateAction<"mint" | "map" | "game" | "personality">
+  >;
 }) => {
   const openWindow = () => {
     setOpenMap(true);
@@ -643,12 +655,12 @@ const MapIcon = ({
 
 const GameIcon = ({
   setOpenGame,
-  openGame,
   setFocusedWindow,
 }: {
   setOpenGame: Dispatch<SetStateAction<boolean>>;
-  openGame: boolean;
-  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map" | "game" | "game">>;
+  setFocusedWindow: Dispatch<
+    SetStateAction<"mint" | "map" | "game" | "personality">
+  >;
 }) => {
   const openWindow = () => {
     setOpenGame(true);
@@ -680,22 +692,31 @@ const BottomNavbar = ({
   setFocusedWindow,
   setOpenGame,
   openGame,
+  setOpenPersonalityTest,
+  openPersonalityTest,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
   openMint: boolean;
   setOpenMap: Dispatch<SetStateAction<boolean>>;
   openMap: boolean;
-  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map" | "game">>;
+  setFocusedWindow: Dispatch<
+    SetStateAction<"mint" | "map" | "game" | "personality">
+  >;
   setOpenGame: Dispatch<SetStateAction<boolean>>;
   openGame: boolean;
+  setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
+  openPersonalityTest: boolean;
 }) => {
-  const openWindow = (window: "mint" | "map" | "game") => {
+  const openWindow = (window: "mint" | "map" | "game" | "personality") => {
     if (window === "mint") {
       setOpenMint(!openMint);
       setFocusedWindow("mint");
     } else if (window === "game") {
       setOpenGame(!openGame);
       setFocusedWindow("game");
+    } else if (window === "personality") {
+      setOpenPersonalityTest(!openPersonalityTest);
+      setFocusedWindow("personality");
     } else {
       setOpenMap(!openMap);
       setFocusedWindow("map");
@@ -745,6 +766,21 @@ const BottomNavbar = ({
             height={100}
           />
           {openGame && <div className="rounded-full bg-white h-1 w-1"></div>}
+        </button>
+        <button
+          onClick={() => openWindow("personality")}
+          className="flex flex-col items-center space-y-1"
+        >
+          <Image
+            className="h-10 w-10"
+            src="/brain.png"
+            alt="personalityicon"
+            width={100}
+            height={100}
+          />
+          {openPersonalityTest && (
+            <div className="rounded-full bg-white h-1 w-1"></div>
+          )}
         </button>
       </div>
     </div>
@@ -995,8 +1031,10 @@ const MapWindow = ({
   focusedWindow,
 }: {
   setOpenMap: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<SetStateAction<"mint" | "map" | "game">>;
-  focusedWindow: "mint" | "map" | "game";
+  setFocusedWindow: Dispatch<
+    SetStateAction<"mint" | "map" | "game" | "personality">
+  >;
+  focusedWindow: "mint" | "map" | "game" | "personality";
 }) => {
   return (
     <div
@@ -1080,8 +1118,10 @@ const GameWindow = ({
   focusedWindow,
 }: {
   setOpenGame: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<SetStateAction<"game" | "map" | "mint">>;
-  focusedWindow: "game" | "map" | "mint";
+  setFocusedWindow: Dispatch<
+    SetStateAction<"game" | "map" | "mint" | "personality">
+  >;
+  focusedWindow: "game" | "map" | "mint" | "personality";
 }) => {
   const [gameObject, setGameObject] = useState<GameObject>();
   const [playerObject, setPlayerObject] = useState<PlayerObject>();
@@ -1323,6 +1363,213 @@ const GameWindow = ({
   );
 };
 
+const PersonalityIcon = ({
+  setOpenPersonalityTest,
+  setFocusedWindow,
+}: {
+  setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
+  setFocusedWindow: Dispatch<
+    SetStateAction<"mint" | "map" | "game" | "personality">
+  >;
+}) => {
+  const openWindow = () => {
+    setOpenPersonalityTest(true);
+    setFocusedWindow("personality");
+  };
+
+  return (
+    <button
+      onClick={openWindow}
+      className="h-20 w-20 flex items-center justify-center flex-col"
+    >
+      <Image
+        src="/brain.png"
+        width={100}
+        height={100}
+        alt="personalityicon"
+        className="w-10 h-10"
+      />
+      <p className="text-sm drop-shadow text-center">Personality Test</p>
+    </button>
+  );
+};
+
 // personality test
+const questions = [
+  {
+    question: "What is your favorite color?",
+    answers: [
+      { answer: "Red", value: "Infernal" },
+      { answer: "Blue", value: "Seraphin" },
+      { answer: "Green", value: "Pridwin" },
+      { answer: "Yellow", value: "Cascadiel" },
+      { answer: "Purple", value: "Ghastiel" },
+      { answer: "Pink", value: "Cherublossom" },
+    ],
+  },
+  {
+    question: "What is your favorite element?",
+    answers: [
+      { answer: "Fire", value: "Infernal" },
+      { answer: "Water", value: "Cascadiel" },
+      { answer: "Air", value: "Pridwin" },
+      { answer: "Earth", value: "Ghastiel" },
+      { answer: "Light", value: "Seraphin" },
+      { answer: "Darkness", value: "Ghastiel" },
+    ],
+  },
+  {
+    question: "What is your favorite season?",
+    answers: [
+      { answer: "Summer", value: "Infernal" },
+      { answer: "Winter", value: "Ghastiel" },
+      { answer: "Spring", value: "Cherublossom" },
+      { answer: "Autumn", value: "Pridwin" },
+      { answer: "Rainy", value: "Cascadiel" },
+      { answer: "Sunny", value: "Seraphin" },
+    ],
+  },
+  {
+    question: "What is your favorite animal?",
+    answers: [
+      { answer: "Dragon", value: "Infernal" },
+      { answer: "Dolphin", value: "Cascadiel" },
+      { answer: "Wolf", value: "Pridwin" },
+      { answer: "Owl", value: "Ghastiel" },
+      { answer: "Unicorn", value: "Cherublossom" },
+      { answer: "Pegasus", value: "Seraphin" },
+    ],
+  },
+  {
+    question: "What is your favorite hobby?",
+    answers: [
+      { answer: "Reading", value: "Seraphin" },
+      { answer: "Swimming", value: "Cascadiel" },
+      { answer: "Hiking", value: "Pridwin" },
+      { answer: "Stargazing", value: "Ghastiel" },
+      { answer: "Gardening", value: "Cherublossom" },
+      { answer: "Painting", value: "Infernal" },
+    ],
+  },
+];
+
+const PersonalityTestWindow = ({
+  setOpenPersonalityTest,
+  setFocusedWindow,
+  focusedWindow,
+}: {
+  setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
+  setFocusedWindow: Dispatch<
+    SetStateAction<"mint" | "map" | "game" | "personality">
+  >;
+  focusedWindow: "mint" | "map" | "game" | "personality";
+}) => {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, number>>({
+    Infernal: 0,
+    Seraphin: 0,
+    Pridwin: 0,
+    Cascadiel: 0,
+    Ghastiel: 0,
+    Cherublossom: 0,
+  });
+  const [maxKey, setMaxKey] = useState<string>("");
+
+  const getMaxKey = () => {
+    let max = 0;
+    let maxKey = "";
+    for (const key in answers) {
+      if (answers[key] > max) {
+        max = answers[key];
+        maxKey = key;
+      }
+    }
+
+    setMaxKey(maxKey);
+  };
+
+  const nextQuestion = (value: string) => {
+    setAnswers((prev) => {
+      return {
+        ...prev,
+        [value]: prev[value] + 1,
+      };
+    });
+
+    if (currentQuestion === questions.length - 1) {
+      getMaxKey();
+      return;
+    }
+
+    setCurrentQuestion((prev) => prev + 1);
+  };
+
+  return (
+    <div
+      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] -top-10 right-5 bottom-16 my-auto`}
+      style={{ zIndex: focusedWindow === "personality" ? 30 : 20 }}
+    >
+      <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#cea6d4] via-[#dddddd] to-[#cea6d4]">
+        <button
+          onClick={() => setOpenPersonalityTest(false)}
+          className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center"
+        >
+          <Icon path={mdiClose} className="h-3 text-black" />
+        </button>
+        <p className="text-sm text-white drop-shadow font-bold">
+          Paingelz Personality Test
+        </p>
+      </div>
+      <div
+        onClick={() => setFocusedWindow("personality")}
+        className="flex h-full pt-10 relative overflow-y-scroll flex-col bg-black"
+      >
+        <h2 className="text-2xl text-center font-bold">
+          Paingelz Personality Test
+        </h2>
+        <div className="flex justify-center items-center">
+          <Image
+            src="/brain.png"
+            className="w-1/2 max-w-[200px]"
+            width={300}
+            height={300}
+            alt="brain"
+          />
+        </div>
+        <div className="p-4 pt-0 space-y-2">
+          <p className="text-center">{questions[currentQuestion].question}</p>
+          <div className="grid grid-cols-2 w-full gap-2">
+            {questions[currentQuestion].answers.map((answer, i) => {
+              return (
+                <button
+                  key={i}
+                  onClick={() => nextQuestion(answer.value)}
+                  className="p-2 border"
+                >
+                  {answer.answer}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      {maxKey && (
+        <div className="border flex-col space-y-2 absolute inset-0 z-20 flex justify-center items-center bg-black/80">
+          <p>Result:</p>
+          <p className="text-2xl font-bold pb-4">{maxKey}</p>
+          <button
+            onClick={() => {
+              setMaxKey("");
+              setCurrentQuestion(0);
+            }}
+            className="p-2 px-4 border"
+          >
+            Reset
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // random generator when minted.
