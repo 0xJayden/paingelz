@@ -1490,6 +1490,7 @@ const PersonalityTestWindow = ({
 
   const nextQuestion = (value: string) => {
     setAnswers((prev) => {
+      console.log(prev);
       return {
         ...prev,
         [value]: prev[value] + 1,
@@ -1561,6 +1562,14 @@ const PersonalityTestWindow = ({
             onClick={() => {
               setMaxKey("");
               setCurrentQuestion(0);
+              setAnswers({
+                Infernal: 0,
+                Seraphin: 0,
+                Pridwin: 0,
+                Cascadiel: 0,
+                Ghastiel: 0,
+                Cherublossom: 0,
+              });
             }}
             className="p-2 px-4 border"
           >
