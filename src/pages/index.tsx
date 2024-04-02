@@ -1000,35 +1000,57 @@ const MapWindow = ({
 }) => {
   return (
     <div
-      className={`absolute h-[60%] md:h-[70%] animate-open w-[75%] top-0 ml-16 bottom-16 my-auto`}
+      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] top-0 ml-16 bottom-16 my-auto`}
       style={{ zIndex: focusedWindow === "map" ? 30 : 20 }}
     >
-      <div className="flex flex-col h-full justify-center items-center relative border-2 rounded bg-black">
-        <button
-          onClick={() => setFocusedWindow("map")}
-          className="absolute cursor-default z-30 inset-0"
-        ></button>
+      <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#a6b5d4] via-[#dddddd] to-[#a6b5d4]">
         <button
           onClick={() => setOpenMap(false)}
-          className="bg-red-500 rounded-full h-4 aspect-square flex justify-center items-center z-40 absolute top-1 left-1"
+          className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center"
         >
           <Icon path={mdiClose} className="h-3 text-black" />
         </button>
-        <div className="items-center absolute z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#c9daff] via-[#eeeeee] to-[#c9daff]">
-          <p className="text-white pl-6 text-sm drop-shadow font-bold">
-            Paingelz World
-          </p>
-        </div>
-        <h2 className="text-2xl font-bold">Painglez World</h2>
-        <div className="relative z-20 max-w-[1400px] w-full">
+        <p className="text-sm text-white drop-shadow font-bold">
+          Paingelz World
+        </p>
+      </div>
+      <div
+        onClick={() => setFocusedWindow("map")}
+        className="flex pt-10 relative overflow-y-scroll flex-col bg-black"
+      >
+        <h2 className="text-2xl text-center font-bold">Paingelz World</h2>
+        <div className="relative z-20 flex justify-center items-center w-full">
           <video
-            className="h-full w-full"
+            className="max-w-[500px] w-full"
             src="/mapvid.mp4"
             muted
             autoPlay
             loop
             playsInline
           />
+        </div>
+        <div className="p-2 space-y-2">
+          <p className="text-sm">{`In the celestial kingdom of Etherealia, six noble kingdoms reign over the vast expanse, each representing a different aspect of the divine realm.`}</p>
+          <p className="font-bold pt-2">{`1. Serpahin Kingdom (star ones)`}</p>
+          <p className="text-sm">{`Symbolizing purity and transcendence, Serphains hails from the gleaming city of Lumina, situated atop the highest peak in Etherealia. Its members possess ethereal beauty and radiant powers, revered as the epitome of angelic grace. They serve as guardians of the realm, their luminescent presence warding off the malevolent forces of House Red. serphanin kingdoms leader, the archangel Lumiel, is revered as the paragon of virtue and wisdom.`}</p>
+          <p className="font-bold pt-2">{`2. **Infernals  **: (red)`}</p>
+          <p className="text-sm">{`Emerging from the fiery depths of Infernia, the city of brimstone and despair, Los diablos embodies darkness and temptation. Its denizens, known as the infernals, wield formidable powers fueled by malice and ambition. Led by the enigmatic Fallen Seraph, Malphas, they seek to spread chaos and corruption throughout Etherealia, locked in eternal conflict with the forces of light.`}</p>
+          <p className="font-bold pt-2">{`3. **Cascadiel Kingdom**:`}</p>
+          <p className="text-sm">{`Nestled beneath the ocean's depths lies the city of Aquatica, home to Cascadiels. These aquatic angels harness the power of the sea, commanding mighty waves and currents. They are adept at navigating both the tranquil depths and treacherous waters, often serving as ambassadors between Etherealia and other realms. Despite their serene appearance, Cascadiels harbors a deep-seated rivalry with House Grey, stemming from ancient conflicts over territorial boundaries.`}</p>
+          <p className="font-bold pt-2">{`4. **Ghastiel Kingdom **:`}</p>
+          <p className="text-sm">{`Dwelling within the mist-shrouded city of Spectra, Ghastiels comprises spectral beings who straddle the line between the corporeal and the ethereal. Ghostly in appearance, they possess the ability to traverse the realms of the living and the dead, serving as guides for lost souls. Despite their neutrality, Ghastiels often finds themselves caught in the crossfire of the celestial conflict, their ethereal city serving as a battleground for opposing forces.`}</p>
+          <p className="font-bold pt-2">{`5. **Cherublossom Realm**:`}</p>
+          <p className="text-sm">{`Radiating with compassion and healing energy, Cherrublossoms call the blossoming city of Elysium home. Its members are adept healers and nurturers, possessing the ability to mend both body and spirit. They are known for their unwavering empathy and kindness, often extending their aid to those in need. Despite their benevolent nature, cherrublossoms faces disdain from some members of House Green, who view their pacifism as a sign of weakness.`}</p>
+          <p className="font-bold pt-2">{`6. **Pridwin kingdom**: (green)`}</p>
+          <p className="text-sm">{`Hailing from the verdant city of Sylvanis, Pridwins embodies cunning and resourcefulness. These stealthy angels are skilled in the arts of espionage and subterfuge, often operating in the shadows to gather intelligence and thwart their enemies' plans. While they possess a strong sense of loyalty to their allies, Pridwins ambition sometimes leads them into conflict with other houses, particularly Cherrublossom, whom they perceive as naive and vulnerable.`}</p>
+          <div className="py-8 w-full text-center">---------</div>
+          <p className="text-sm">{`Throughout the ages, the celestial kingdom of Etherealia has been embroiled in a perpetual struggle for dominance, as the six noble kingdoms vie for supremacy over the realm. Rivalries run deep, alliances shift like the tides, and the fate of Etherealia hangs in the balance as the forces of light and darkness clash in an eternal battle for control.`}</p>
+          <p className="text-sm">{`In the depths of Etherealia, beyond the shimmering cities and celestial palaces, lies the Veil of Sorrow, a realm shrouded in darkness and despair. It is here that the paingelz
+ dwell, angels born from the agony and anguish of sentient beings across the cosmos.`}</p>
+          <p className="text-sm">{`Long ago, during a time of great turmoil, the ethereal energies of Etherealia coalesced within the Veil, giving rise to the first paingelz. These beings, forged from the very essence of suffering, possess a unique ability to empathize with the pain of others, granting them unparalleled insight into the depths of the human soul.`}</p>
+          <p className="text-sm">{`However, the creation of the Paingelz was not without consequence. Their existence is a constant reminder of the pain and suffering that permeates the universe, and their presence has sparked fear and mistrust among the other celestial houses. Many view them as harbingers of doom, believing that their very existence threatens the delicate balance of Etherealia.`}</p>
+          <p className="text-sm">{`As the celestial conflict rages on, the Paingelz find themselves torn between their innate empathy and the expectations of their fellow angels. Some seek to embrace their role as healers, using their unique gifts to alleviate the suffering of others and bring hope to the darkest corners of the cosmos. Others, however, succumb to the whispers of darkness, harnessing their pain-forged powers to sow chaos and destruction.`}</p>
+          <p className="text-sm">{`Caught in the crossfire of the celestial war, the Paingelz must navigate a treacherous path, torn between their duty to protect the realm and the burden of their own existence. As they struggle to find their place in a world torn apart by conflict, the fate of Etherealia hangs in the balance, and only time will tell whether the Paingelz will be its salvation or its downfall.`}</p>
         </div>
       </div>
     </div>
@@ -1300,3 +1322,7 @@ const GameWindow = ({
     </div>
   );
 };
+
+// personality test
+
+// random generator when minted.
