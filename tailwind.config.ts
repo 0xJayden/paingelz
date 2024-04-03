@@ -23,10 +23,15 @@ const config: Config = {
         "0%": { opacity: "0", transform: "translateY(20px)" },
         "100%": { opacity: "1", transform: "translateY(0)" },
       },
+      pulse: {
+        "0%, 100%": { opacity: "1" },
+        "50%": { opacity: "0.5" },
+      },
     },
     animation: {
       open: "open 0.5s ease-in-out",
       fadeUp: "fadeUp 0.5s ease-in-out",
+      pulse: "pulse 2s ease-in-out infinite",
     },
   },
   plugins: [],

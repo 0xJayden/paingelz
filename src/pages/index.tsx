@@ -23,8 +23,12 @@ import {
 } from "@metaplex-foundation/umi";
 import { setComputeUnitLimit } from "@metaplex-foundation/mpl-toolbox";
 import { base58 } from "@metaplex-foundation/umi/serializers";
+import { Connection } from "@solana/web3.js";
+import { Metaplex } from "@metaplex-foundation/js";
 
 const inter = Inter({ subsets: ["latin"] });
+
+type Windows = "mint" | "map" | "game" | "personality" | "collection";
 
 export default function Home() {
   const [openMint, setOpenMint] = useState(false);
@@ -33,11 +37,10 @@ export default function Home() {
   const [audio, setAudio] = useState<HTMLAudioElement>();
   const [playing, setPlaying] = useState(false);
   const [openMap, setOpenMap] = useState(false);
-  const [focusedWindow, setFocusedWindow] = useState<
-    "mint" | "map" | "game" | "personality"
-  >("mint");
+  const [focusedWindow, setFocusedWindow] = useState<Windows>("mint");
   const [openGame, setOpenGame] = useState(false);
   const [openPersonalityTest, setOpenPersonalityTest] = useState(false);
+  const [openCollection, setOpenCollection] = useState(false);
 
   const requestRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
@@ -157,6 +160,7 @@ export default function Home() {
             setFocusedWindow={setFocusedWindow}
             setOpenGame={setOpenGame}
             setOpenPersonalityTest={setOpenPersonalityTest}
+            setOpenCollection={setOpenCollection}
           />
           {openMint && (
             <MintWindow
@@ -186,6 +190,13 @@ export default function Home() {
               focusedWindow={focusedWindow}
             />
           )}
+          {openCollection && (
+            <CollectionWindow
+              setOpenCollection={setOpenCollection}
+              setFocusedWindow={setFocusedWindow}
+              focusedWindow={focusedWindow}
+            />
+          )}
           <BottomNavbar
             setOpenMint={setOpenMint}
             openMint={openMint}
@@ -196,6 +207,8 @@ export default function Home() {
             openGame={openGame}
             setOpenPersonalityTest={setOpenPersonalityTest}
             openPersonalityTest={openPersonalityTest}
+            setOpenCollection={setOpenCollection}
+            openCollection={openCollection}
           />
         </>
       )}
@@ -232,10 +245,8 @@ const MintWindow = ({
   focusedWindow,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<
-    SetStateAction<"mint" | "map" | "game" | "personality">
-  >;
-  focusedWindow: "mint" | "map" | "game" | "personality";
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
+  focusedWindow: Windows;
 }) => {
   const [dots, setDots] = useState<Array<Dot>>([]);
   const [price, setPrice] = useState<number>();
@@ -545,22 +556,26 @@ const IconContainer = ({
   setFocusedWindow,
   setOpenGame,
   setOpenPersonalityTest,
+  setOpenCollection,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
   setOpenMap: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<
-    SetStateAction<"mint" | "map" | "game" | "personality">
-  >;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
   setOpenGame: Dispatch<SetStateAction<boolean>>;
   setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
+  setOpenCollection: Dispatch<SetStateAction<boolean>>;
 }) => {
   return (
-    <div className="absolute flex space-x-4 p-4 inset-0 z-10">
+    <div className="absolute gap-4 gap-y-10 grid grid-cols-4 p-4 w-full z-10">
       <MintIcon setOpenMint={setOpenMint} setFocusedWindow={setFocusedWindow} />
       <MapIcon setOpenMap={setOpenMap} setFocusedWindow={setFocusedWindow} />
       <GameIcon setOpenGame={setOpenGame} setFocusedWindow={setFocusedWindow} />
       <PersonalityIcon
         setOpenPersonalityTest={setOpenPersonalityTest}
+        setFocusedWindow={setFocusedWindow}
+      />
+      <CollectionIcon
+        setOpenCollection={setOpenCollection}
         setFocusedWindow={setFocusedWindow}
       />
     </div>
@@ -572,9 +587,7 @@ const MintIcon = ({
   setFocusedWindow,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<
-    SetStateAction<"mint" | "map" | "game" | "personality">
-  >;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   const openWindow = () => {
     setOpenMint(true);
@@ -603,9 +616,7 @@ const MapIcon = ({
   setFocusedWindow,
 }: {
   setOpenMap: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<
-    SetStateAction<"mint" | "map" | "game" | "personality">
-  >;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   const openWindow = () => {
     setOpenMap(true);
@@ -634,9 +645,7 @@ const GameIcon = ({
   setFocusedWindow,
 }: {
   setOpenGame: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<
-    SetStateAction<"mint" | "map" | "game" | "personality">
-  >;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   const openWindow = () => {
     setOpenGame(true);
@@ -670,20 +679,22 @@ const BottomNavbar = ({
   openGame,
   setOpenPersonalityTest,
   openPersonalityTest,
+  setOpenCollection,
+  openCollection,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
   openMint: boolean;
   setOpenMap: Dispatch<SetStateAction<boolean>>;
   openMap: boolean;
-  setFocusedWindow: Dispatch<
-    SetStateAction<"mint" | "map" | "game" | "personality">
-  >;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
   setOpenGame: Dispatch<SetStateAction<boolean>>;
   openGame: boolean;
   setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
   openPersonalityTest: boolean;
+  setOpenCollection: Dispatch<SetStateAction<boolean>>;
+  openCollection: boolean;
 }) => {
-  const openWindow = (window: "mint" | "map" | "game" | "personality") => {
+  const openWindow = (window: Windows) => {
     if (window === "mint") {
       setOpenMint(!openMint);
       setFocusedWindow("mint");
@@ -693,6 +704,9 @@ const BottomNavbar = ({
     } else if (window === "personality") {
       setOpenPersonalityTest(!openPersonalityTest);
       setFocusedWindow("personality");
+    } else if (window === "collection") {
+      setOpenCollection(!openCollection);
+      setFocusedWindow("collection");
     } else {
       setOpenMap(!openMap);
       setFocusedWindow("map");
@@ -701,7 +715,7 @@ const BottomNavbar = ({
 
   return (
     <div className="absolute bottom-0 p-2 z-20 left-0 right-0 h-20">
-      <div className="bg-[#20201d]/70 space-x-2 px-2 backdrop-blur h-full rounded-xl flex p-1 items-center">
+      <div className="bg-[#20201d]/70 space-x-2 px-2 backdrop-blur overflow-y-hidden overflow-x-scroll h-full rounded-xl flex p-1 items-center">
         <WalletMultiButton />
         <div className="h-full border border-[#555555]"></div>
         <button
@@ -710,10 +724,10 @@ const BottomNavbar = ({
         >
           <Image
             src={"/minticon.png"}
-            width={100}
-            height={100}
+            width={40}
+            height={40}
             alt="minticon"
-            className="w-10 h-10"
+            className="min-h-10 min-w-10"
           />
           {openMint && <div className="rounded-full bg-white h-1 w-1"></div>}
         </button>
@@ -722,11 +736,11 @@ const BottomNavbar = ({
           className="flex flex-col pb-1 items-center space-y-1 rounded-full"
         >
           <Image
-            className="h-10 w-10"
+            className="min-h-10 min-w-10"
             src={"/mapicon.png"}
             alt="mapicon"
-            width={100}
-            height={100}
+            width={40}
+            height={40}
           />
           {openMap && <div className="rounded-full bg-white h-1 w-1"></div>}
         </button>
@@ -735,11 +749,11 @@ const BottomNavbar = ({
           className="flex flex-col items-center space-y-1"
         >
           <Image
-            className="h-10 w-10"
+            className="min-h-10 min-w-10"
             src={"/gameicon.png"}
             alt="gameicon"
-            width={100}
-            height={100}
+            width={40}
+            height={40}
           />
           {openGame && <div className="rounded-full bg-white h-1 w-1"></div>}
         </button>
@@ -748,13 +762,28 @@ const BottomNavbar = ({
           className="flex flex-col items-center space-y-1"
         >
           <Image
-            className="h-10 w-10"
+            className="min-h-10 min-w-10"
             src="/brain.png"
             alt="personalityicon"
-            width={100}
-            height={100}
+            width={40}
+            height={40}
           />
           {openPersonalityTest && (
+            <div className="rounded-full bg-white h-1 w-1"></div>
+          )}
+        </button>
+        <button
+          onClick={() => openWindow("collection")}
+          className="flex flex-col items-center space-y-1"
+        >
+          <Image
+            className="min-h-10 min-w-10"
+            src="/starsPaingel.png"
+            alt="collectionicon"
+            width={40}
+            height={40}
+          />
+          {openCollection && (
             <div className="rounded-full bg-white h-1 w-1"></div>
           )}
         </button>
@@ -1007,10 +1036,8 @@ const MapWindow = ({
   focusedWindow,
 }: {
   setOpenMap: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<
-    SetStateAction<"mint" | "map" | "game" | "personality">
-  >;
-  focusedWindow: "mint" | "map" | "game" | "personality";
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
+  focusedWindow: Windows;
 }) => {
   return (
     <div
@@ -1094,10 +1121,8 @@ const GameWindow = ({
   focusedWindow,
 }: {
   setOpenGame: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<
-    SetStateAction<"game" | "map" | "mint" | "personality">
-  >;
-  focusedWindow: "game" | "map" | "mint" | "personality";
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
+  focusedWindow: Windows;
 }) => {
   const [gameObject, setGameObject] = useState<GameObject>();
   const [playerObject, setPlayerObject] = useState<PlayerObject>();
@@ -1344,9 +1369,7 @@ const PersonalityIcon = ({
   setFocusedWindow,
 }: {
   setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<
-    SetStateAction<"mint" | "map" | "game" | "personality">
-  >;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   const openWindow = () => {
     setOpenPersonalityTest(true);
@@ -1445,10 +1468,8 @@ const PersonalityTestWindow = ({
   focusedWindow,
 }: {
   setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<
-    SetStateAction<"mint" | "map" | "game" | "personality">
-  >;
-  focusedWindow: "mint" | "map" | "game" | "personality";
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
+  focusedWindow: Windows;
 }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({
@@ -1592,4 +1613,148 @@ const PersonalityTestWindow = ({
   );
 };
 
-// random generator when minted.
+const CollectionIcon = ({
+  setOpenCollection,
+  setFocusedWindow,
+}: {
+  setOpenCollection: Dispatch<SetStateAction<boolean>>;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
+}) => {
+  const openWindow = () => {
+    setOpenCollection(true);
+    setFocusedWindow("collection");
+  };
+
+  return (
+    <button
+      onClick={openWindow}
+      className="h-20 w-20 flex items-center justify-center flex-col"
+    >
+      <Image
+        src="/starsPaingel.png"
+        width={100}
+        height={100}
+        alt="collectionicon"
+        className="w-10 h-10"
+      />
+      <p className="text-sm drop-shadow text-center">View Collection</p>
+    </button>
+  );
+};
+
+const CollectionWindow = ({
+  focusedWindow,
+  setOpenCollection,
+  setFocusedWindow,
+}: {
+  focusedWindow: Windows;
+  setOpenCollection: Dispatch<SetStateAction<boolean>>;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
+}) => {
+  const [nfts, setNfts] = useState<Array<{ name: string; image: string }>>();
+  const [status, setStatus] = useState<"loading" | "loaded" | "error">(
+    "loading"
+  );
+  const [message, setMessage] = useState<string>("");
+
+  const { wallet, connected } = useWallet();
+
+  const connection = new Connection("https://api.devnet.solana.com");
+  const metaplex = new Metaplex(connection);
+
+  const getNfts = async () => {
+    setNfts([]);
+    setStatus("loading");
+    const owner = wallet?.adapter.publicKey;
+    if (!owner) {
+      setStatus("error");
+      setMessage("Wallet not connected. Please connect your wallet.");
+      return;
+    }
+
+    const ownedNfts = (await metaplex.nfts().findAllByOwner({ owner })).filter(
+      (nft) =>
+        nft.collection?.address.toString() ===
+        "HYGKcXjQftFRKLc5br3nV6rCdsnuJA1jqrAegjw6cMgq"
+    );
+
+    const newNfts = [];
+    for (const nft of ownedNfts) {
+      let newNft = {
+        name: nft.name,
+        image: "",
+      };
+      const uri = await fetch(nft.uri).then((res) => res.json());
+      console.log(nft.address.toString());
+      newNft.image = uri.image;
+      newNfts.push(newNft);
+    }
+
+    if (newNfts.length === 0) {
+      setStatus("error");
+      setMessage("No NFTs found :(");
+      return;
+    }
+
+    setNfts(newNfts);
+    setStatus("loaded");
+  };
+
+  useEffect(() => {
+    getNfts();
+  }, [connected, wallet]);
+
+  return (
+    <div
+      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] -top-10 right-5 bottom-16 my-auto`}
+      style={{ zIndex: focusedWindow === "collection" ? 30 : 20 }}
+    >
+      <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#cea6d4] via-[#dddddd] to-[#cea6d4]">
+        <button
+          onClick={() => setOpenCollection(false)}
+          className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center"
+        >
+          <Icon path={mdiClose} className="h-3 text-black" />
+        </button>
+        <p className="text-sm text-white drop-shadow font-bold">
+          Paingelz Collection
+        </p>
+      </div>
+      <div
+        onClick={() => setFocusedWindow("collection")}
+        className="flex h-full pt-10 p-2 relative overflow-y-scroll flex-col bg-black"
+      >
+        <h2 className="text-2xl pb-4 text-center font-bold">
+          Paingelz Collection
+        </h2>
+        {nfts && (
+          <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
+            {nfts.map((nft, i) => {
+              return (
+                <div
+                  key={i}
+                  className="flex space-y-2 flex-col justify-center items-center w-full h-full max-w-[1000px] overflow-hidden"
+                >
+                  <img src={nft.image} className="w-full h-full object-cover" />
+                  <p>{nft.name}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {status === "loading" ? (
+          <div className="grid grid-cols-2 gap-2 h-full">
+            <div className="bg-[#696969] animate-pulse"></div>
+            <div className="bg-[#696969] animate-pulse"></div>
+            <div className="bg-[#696969] animate-pulse"></div>
+            <div className="bg-[#696969] animate-pulse"></div>
+            <div className="bg-[#696969] animate-pulse"></div>
+            <div className="bg-[#696969] animate-pulse"></div>
+          </div>
+        ) : (
+          status === "error" && <p className="text-center">{message}</p>
+        )}
+      </div>
+    </div>
+  );
+};
