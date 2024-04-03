@@ -132,18 +132,6 @@ export default function Home() {
                 style={{ top: dot.y + "px", left: dot.x + "px" }}
                 className="w-3 h-3 absolute z-50"
               />
-              // <div
-              //   key={i}
-              //   id="dot"
-              //   style={{
-              //     top: dot.y + "px",
-              //     left: dot.x + "px",
-              //     backgroundColor: dot.color,
-              //     height: dot.size + "px",
-              //     width: dot.size + "px",
-              //   }}
-              //   className={`absolute rounded-full z-50`}
-              // ></div>
             );
           })}
           <div className="absolute inset-0">
@@ -155,7 +143,7 @@ export default function Home() {
               alt="bga"
             />
           </div>
-          <div className="absolute bottom-20">
+          <div className="absolute bottom-16">
             <Image
               src={"/paingelzlogo.png"}
               width={400}
@@ -165,14 +153,10 @@ export default function Home() {
           </div>
           <IconContainer
             setOpenMint={setOpenMint}
-            openMint={openMint}
             setOpenMap={setOpenMap}
-            openMap={openMap}
             setFocusedWindow={setFocusedWindow}
             setOpenGame={setOpenGame}
-            openGame={openGame}
             setOpenPersonalityTest={setOpenPersonalityTest}
-            openPersonalityTest={openPersonalityTest}
           />
           {openMint && (
             <MintWindow
@@ -458,7 +442,7 @@ const MintWindow = ({
 
   return (
     <div
-      className={`absolute animate-open inset-0 h-[60%] sm:h-[70%] overflow-hidden mx-auto my-auto w-[75%] text-[#00eeee]`}
+      className={`absolute animate-open top-[120px] h-[55%] sm:h-[70%] overflow-hidden mx-auto my-auto w-[75%] text-[#00eeee]`}
       style={{ zIndex: focusedWindow === "mint" ? 30 : 20 }}
     >
       <div
@@ -557,29 +541,21 @@ const MintWindow = ({
 
 const IconContainer = ({
   setOpenMint,
-  openMint,
   setOpenMap,
-  openMap,
   setFocusedWindow,
   setOpenGame,
-  openGame,
   setOpenPersonalityTest,
-  openPersonalityTest,
 }: {
   setOpenMint: Dispatch<SetStateAction<boolean>>;
-  openMint: boolean;
   setOpenMap: Dispatch<SetStateAction<boolean>>;
-  openMap: boolean;
   setFocusedWindow: Dispatch<
     SetStateAction<"mint" | "map" | "game" | "personality">
   >;
   setOpenGame: Dispatch<SetStateAction<boolean>>;
-  openGame: boolean;
   setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
-  openPersonalityTest: boolean;
 }) => {
   return (
-    <div className="absolute space-y-4 p-4 inset-0 z-10">
+    <div className="absolute flex space-x-4 p-4 inset-0 z-10">
       <MintIcon setOpenMint={setOpenMint} setFocusedWindow={setFocusedWindow} />
       <MapIcon setOpenMap={setOpenMap} setFocusedWindow={setFocusedWindow} />
       <GameIcon setOpenGame={setOpenGame} setFocusedWindow={setFocusedWindow} />
@@ -1069,17 +1045,17 @@ const MapWindow = ({
         </div>
         <div className="p-2 space-y-2">
           <p className="text-sm">{`In the celestial kingdom of Etherealia, six noble kingdoms reign over the vast expanse, each representing a different aspect of the divine realm.`}</p>
-          <p className="font-bold pt-2">{`1. Serpahin Kingdom (star ones)`}</p>
+          <p className="font-bold pt-2">{`1. **Seraphin , color: "Stars"Kingdom**: (Star Ones)`}</p>
           <p className="text-sm">{`Symbolizing purity and transcendence, Serphains hails from the gleaming city of Lumina, situated atop the highest peak in Etherealia. Its members possess ethereal beauty and radiant powers, revered as the epitome of angelic grace. They serve as guardians of the realm, their luminescent presence warding off the malevolent forces of House Red. serphanin kingdoms leader, the archangel Lumiel, is revered as the paragon of virtue and wisdom.`}</p>
-          <p className="font-bold pt-2">{`2. **Infernals  **: (red)`}</p>
+          <p className="font-bold pt-2">{`2. **Infernals**: (Red)`}</p>
           <p className="text-sm">{`Emerging from the fiery depths of Infernia, the city of brimstone and despair, Los diablos embodies darkness and temptation. Its denizens, known as the infernals, wield formidable powers fueled by malice and ambition. Led by the enigmatic Fallen Seraph, Malphas, they seek to spread chaos and corruption throughout Etherealia, locked in eternal conflict with the forces of light.`}</p>
-          <p className="font-bold pt-2">{`3. **Cascadiel Kingdom**:`}</p>
+          <p className="font-bold pt-2">{`3. **Cascadiel Kingdom**: (Blue)`}</p>
           <p className="text-sm">{`Nestled beneath the ocean's depths lies the city of Aquatica, home to Cascadiels. These aquatic angels harness the power of the sea, commanding mighty waves and currents. They are adept at navigating both the tranquil depths and treacherous waters, often serving as ambassadors between Etherealia and other realms. Despite their serene appearance, Cascadiels harbors a deep-seated rivalry with House Grey, stemming from ancient conflicts over territorial boundaries.`}</p>
-          <p className="font-bold pt-2">{`4. **Ghastiel Kingdom **:`}</p>
+          <p className="font-bold pt-2">{`4. **Ghastiel Kingdom**: (Gray)`}</p>
           <p className="text-sm">{`Dwelling within the mist-shrouded city of Spectra, Ghastiels comprises spectral beings who straddle the line between the corporeal and the ethereal. Ghostly in appearance, they possess the ability to traverse the realms of the living and the dead, serving as guides for lost souls. Despite their neutrality, Ghastiels often finds themselves caught in the crossfire of the celestial conflict, their ethereal city serving as a battleground for opposing forces.`}</p>
-          <p className="font-bold pt-2">{`5. **Cherublossom Realm**:`}</p>
+          <p className="font-bold pt-2">{`5. **Cherublossom Realm**: (Pink)`}</p>
           <p className="text-sm">{`Radiating with compassion and healing energy, Cherrublossoms call the blossoming city of Elysium home. Its members are adept healers and nurturers, possessing the ability to mend both body and spirit. They are known for their unwavering empathy and kindness, often extending their aid to those in need. Despite their benevolent nature, cherrublossoms faces disdain from some members of House Green, who view their pacifism as a sign of weakness.`}</p>
-          <p className="font-bold pt-2">{`6. **Pridwin kingdom**: (green)`}</p>
+          <p className="font-bold pt-2">{`6. **Pridwin kingdom**: (Green)`}</p>
           <p className="text-sm">{`Hailing from the verdant city of Sylvanis, Pridwins embodies cunning and resourcefulness. These stealthy angels are skilled in the arts of espionage and subterfuge, often operating in the shadows to gather intelligence and thwart their enemies' plans. While they possess a strong sense of loyalty to their allies, Pridwins ambition sometimes leads them into conflict with other houses, particularly Cherrublossom, whom they perceive as naive and vulnerable.`}</p>
           <div className="py-8 w-full text-center">---------</div>
           <p className="text-sm">{`Throughout the ages, the celestial kingdom of Etherealia has been embroiled in a perpetual struggle for dominance, as the six noble kingdoms vie for supremacy over the realm. Rivalries run deep, alliances shift like the tides, and the fate of Etherealia hangs in the balance as the forces of light and darkness clash in an eternal battle for control.`}</p>
@@ -1397,60 +1373,70 @@ const PersonalityIcon = ({
 // personality test
 const questions = [
   {
-    question: "What is your favorite color?",
+    question: "Choose your super power.",
     answers: [
-      { answer: "Red", value: "Infernal" },
-      { answer: "Blue", value: "Seraphin" },
-      { answer: "Green", value: "Pridwin" },
-      { answer: "Yellow", value: "Cascadiel" },
-      { answer: "Purple", value: "Ghastiel" },
-      { answer: "Pink", value: "Cherublossom" },
+      { answer: "Flight", value: "Seraphin", color: "Stars" },
+      { answer: "Telekinesis", value: "Infernal", color: "Red" },
+      { answer: "Invisibility", value: "Ghastiel", color: "Gray" },
+      { answer: "Healing", value: "Cherublossom", color: "Pink" },
+      { answer: "Teleportation", value: "Pridwin", color: "Green" },
+      { answer: "Time Travel", value: "Cascadiel", color: "Blue" },
     ],
   },
   {
-    question: "What is your favorite element?",
+    question: "If you had to pick one, what would it be?",
     answers: [
-      { answer: "Fire", value: "Infernal" },
-      { answer: "Water", value: "Cascadiel" },
-      { answer: "Air", value: "Pridwin" },
-      { answer: "Earth", value: "Ghastiel" },
-      { answer: "Light", value: "Seraphin" },
-      { answer: "Darkness", value: "Ghastiel" },
+      { answer: "Money", value: "Pridwin", color: "Green" },
+      { answer: "Love", value: "Cherublossom", color: "Pink" },
+      { answer: "Power", value: "Infernal", color: "Red" },
+      { answer: "Knowledge", value: "Seraphin", color: "Stars" },
+      { answer: "Peace", value: "Cascadiel", color: "Blue" },
+      { answer: "Death", value: "Ghastiel", color: "Gray" },
     ],
   },
   {
-    question: "What is your favorite season?",
+    question: "You end up in heaven. What do you do first?",
     answers: [
-      { answer: "Summer", value: "Infernal" },
-      { answer: "Winter", value: "Ghastiel" },
-      { answer: "Spring", value: "Cherublossom" },
-      { answer: "Autumn", value: "Pridwin" },
-      { answer: "Rainy", value: "Cascadiel" },
-      { answer: "Sunny", value: "Seraphin" },
+      { answer: "Fly with the angels", value: "Seraphin", color: "Stars" },
+      { answer: "Kiss God", value: "Cherublossom", color: "Pink" },
+      { answer: "Scare everyone", value: "Ghastiel", color: "Gray" },
+      { answer: "Visit great grandma", value: "Pridwin", color: "Green" },
+      { answer: "Chill", value: "Cascadiel", color: "Blue" },
+      { answer: "Plot against God", value: "Infernal", color: "Red" },
     ],
   },
   {
-    question: "What is your favorite animal?",
+    question:
+      "You find yourself stranded on an island with Adam Sandler. What do you do about it?",
     answers: [
-      { answer: "Dragon", value: "Infernal" },
-      { answer: "Dolphin", value: "Cascadiel" },
-      { answer: "Wolf", value: "Pridwin" },
-      { answer: "Owl", value: "Ghastiel" },
-      { answer: "Unicorn", value: "Cherublossom" },
-      { answer: "Pegasus", value: "Seraphin" },
+      { answer: "Throw him in the sea", value: "Infernal", color: "Red" },
+      { answer: "Nothing", value: "Cascadiel", color: "Blue" },
+      { answer: "Smoke a blunt", value: "Pridwin", color: "Green" },
+      { answer: "Throw yourself in the sea", value: "Ghastiel", color: "Gray" },
+      { answer: "Play golf", value: "Seraphin", color: "Stars" },
+      { answer: "Flirt", value: "Cherublossom", color: "Pink" },
     ],
   },
   {
-    question: "What is your favorite hobby?",
+    question: "What would you rather be doing right now?",
     answers: [
-      { answer: "Reading", value: "Seraphin" },
-      { answer: "Swimming", value: "Cascadiel" },
-      { answer: "Hiking", value: "Pridwin" },
-      { answer: "Stargazing", value: "Ghastiel" },
-      { answer: "Gardening", value: "Cherublossom" },
-      { answer: "Painting", value: "Infernal" },
+      { answer: "Getting a tattoo", value: "Ghastiel", color: "Gray" },
+      { answer: "Burning stuff", value: "Infernal", color: "Red" },
+      { answer: "Partying", value: "Pridwin", color: "Green" },
+      { answer: "Sleeping", value: "Cascadiel", color: "Blue" },
+      { answer: "Floating in space", value: "Seraphin", color: "Stars" },
+      { answer: "Bangin", value: "Cherublossom", color: "Pink" },
     ],
   },
+];
+
+const ColorTypes = [
+  { type: "Infernal", color: "Red" },
+  { type: "Seraphin", color: "Stars" },
+  { type: "Pridwin", color: "Green" },
+  { type: "Cascadiel", color: "Blue" },
+  { type: "Ghastiel", color: "Gray" },
+  { type: "Cherublossom", color: "Pink" },
 ];
 
 const PersonalityTestWindow = ({
@@ -1488,9 +1474,16 @@ const PersonalityTestWindow = ({
     setMaxKey(maxKey);
   };
 
+  const getColorType = () => {
+    const color = ColorTypes.find((color) => color.type === maxKey);
+
+    if (!color) return "";
+
+    return color.color;
+  };
+
   const nextQuestion = (value: string) => {
     setAnswers((prev) => {
-      console.log(prev);
       return {
         ...prev,
         [value]: prev[value] + 1,
@@ -1555,9 +1548,20 @@ const PersonalityTestWindow = ({
         </div>
       </div>
       {maxKey && (
-        <div className="border flex-col space-y-2 absolute inset-0 z-20 flex justify-center items-center bg-black/80">
-          <p>Result:</p>
-          <p className="text-2xl font-bold pb-4">{maxKey}</p>
+        <div className="border p-2 flex-col space-y-2 absolute inset-0 z-20 flex justify-center items-center bg-black/80">
+          <p className="text-xl text-center">
+            You must be the{" "}
+            <span className="font-bold">
+              {getColorType()} {maxKey}
+            </span>{" "}
+            Paingel!
+          </p>
+          <Image
+            src={`/${getColorType().toLowerCase()}Paingel.png`}
+            width={150}
+            height={150}
+            alt={maxKey}
+          />
           <button
             onClick={() => {
               setMaxKey("");
