@@ -1045,8 +1045,8 @@ const MapWindow = ({
         </div>
         <div className="p-2 space-y-2">
           <p className="text-sm">{`In the celestial kingdom of Etherealia, six noble kingdoms reign over the vast expanse, each representing a different aspect of the divine realm.`}</p>
-          <p className="font-bold pt-2">{`1. **Seraphin , color: "Stars"Kingdom**: (Star Ones)`}</p>
-          <p className="text-sm">{`Symbolizing purity and transcendence, Serphains hails from the gleaming city of Lumina, situated atop the highest peak in Etherealia. Its members possess ethereal beauty and radiant powers, revered as the epitome of angelic grace. They serve as guardians of the realm, their luminescent presence warding off the malevolent forces of House Red. serphanin kingdoms leader, the archangel Lumiel, is revered as the paragon of virtue and wisdom.`}</p>
+          <p className="font-bold pt-2">{`1. **Seraphin Kingdom**: (Star Ones)`}</p>
+          <p className="text-sm">{`Symbolizing purity and transcendence, Seraphins hails from the gleaming city of Lumina, situated atop the highest peak in Etherealia. Its members possess ethereal beauty and radiant powers, revered as the epitome of angelic grace. They serve as guardians of the realm, their luminescent presence warding off the malevolent forces of House Red. Seraphins kingdoms leader, the archangel Lumiel, is revered as the paragon of virtue and wisdom.`}</p>
           <p className="font-bold pt-2">{`2. **Infernals**: (Red)`}</p>
           <p className="text-sm">{`Emerging from the fiery depths of Infernia, the city of brimstone and despair, Los diablos embodies darkness and temptation. Its denizens, known as the infernals, wield formidable powers fueled by malice and ambition. Led by the enigmatic Fallen Seraph, Malphas, they seek to spread chaos and corruption throughout Etherealia, locked in eternal conflict with the forces of light.`}</p>
           <p className="font-bold pt-2">{`3. **Cascadiel Kingdom**: (Blue)`}</p>
@@ -1496,6 +1496,12 @@ const PersonalityTestWindow = ({
     }
 
     setCurrentQuestion((prev) => prev + 1);
+    setTimeout(() => scrollToBottom(), 200);
+  };
+
+  const scrollToBottom = () => {
+    const scrollTo = document.getElementById("scrollTo");
+    if (scrollTo) scrollTo.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
@@ -1546,6 +1552,7 @@ const PersonalityTestWindow = ({
             })}
           </div>
         </div>
+        <div id="scrollTo"></div>
       </div>
       {maxKey && (
         <div className="border p-2 flex-col space-y-2 absolute inset-0 z-20 flex justify-center items-center bg-black/80">
