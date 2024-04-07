@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import Icon from "@mdi/react";
-import { mdiClose } from "@mdi/js";
+import { mdiClose, mdiContentCopy } from "@mdi/js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
@@ -249,11 +249,16 @@ const MintWindow = ({
   focusedWindow: Windows;
 }) => {
   const [dots, setDots] = useState<Array<Dot>>([]);
-  const [price, setPrice] = useState<number>();
   const [clouds, setClouds] = useState<Array<Cloud>>([]);
+  const [success, setSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const dotContainerRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
+  const priceRef = useRef<number>(0);
+  const itemsLeftRef = useRef<number>(0);
+  const txhashRef = useRef<string>("");
 
   const wallet = useWallet();
 
@@ -349,7 +354,7 @@ const MintWindow = ({
   };
 
   useEffect(() => {
-    getPrice();
+    getNftInfo();
     generateDots();
     generateClouds();
     requestRef.current = requestAnimationFrame(animate);
@@ -358,7 +363,7 @@ const MintWindow = ({
 
   const generateDots = () => {
     const newDots: Dot[] = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 25; i++) {
       if (!dotContainerRef.current) return;
       newDots.push({
         x: Math.random() * dotContainerRef.current.offsetWidth - 10,
@@ -375,7 +380,7 @@ const MintWindow = ({
 
   const generateClouds = () => {
     const clouds: Cloud[] = [];
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 25; i++) {
       clouds.push({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
@@ -388,10 +393,10 @@ const MintWindow = ({
     setClouds(clouds);
   };
 
-  const getPrice = async () => {
+  const getNftInfo = async () => {
     const candyMachine = await fetchCandyMachine(
       umi,
-      publicKey("9FqygJoSDwh3kw31koPgoLkLKLaqh38tdebthABeG4C4")
+      publicKey("DutpptvYwFwbHQH2Cbr5v4SDCCCAk9LDfNASa9sBYBTn")
     );
 
     const candyGuard = await safeFetchCandyGuard(
@@ -399,18 +404,24 @@ const MintWindow = ({
       candyMachine.mintAuthority
     );
 
-    setPrice(
+    priceRef.current =
       // @ts-ignore
-      Number(candyGuard?.guards.solPayment.value.lamports.basisPoints) / 10 ** 9
-    );
+      Number(candyGuard?.guards.solPayment.value.lamports.basisPoints) /
+      10 ** 9;
+    itemsLeftRef.current = candyMachine.items.filter(
+      (item) => !item.minted
+    ).length;
   };
 
   const mint = async () => {
-    if (!wallet.publicKey) return console.log("No wallet connected");
+    if (!wallet.publicKey) {
+      setErrorMessage("Please connect your wallet");
+      return;
+    }
 
     const candyMachine = await fetchCandyMachine(
       umi,
-      publicKey("9FqygJoSDwh3kw31koPgoLkLKLaqh38tdebthABeG4C4")
+      publicKey("DutpptvYwFwbHQH2Cbr5v4SDCCCAk9LDfNASa9sBYBTn")
     );
 
     const candyGuard = await safeFetchCandyGuard(
@@ -445,15 +456,23 @@ const MintWindow = ({
       });
 
       const txid = base58.deserialize(signature)[0];
+      txhashRef.current = txid;
+      await getNftInfo();
+      setSuccess(true);
       console.log(`Minted NFT with txid: ${txid}`);
     } catch (error) {
       console.error(`Error minting NFT: ${error}`);
     }
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(txhashRef.current);
+    setCopySuccess(true);
+  };
+
   return (
     <div
-      className={`absolute animate-open top-[120px] h-[55%] sm:h-[70%] overflow-hidden mx-auto my-auto w-[75%] text-[#00eeee]`}
+      className={`absolute animate-open top-[100px] h-[55%] sm:h-[70%] overflow-hidden right-2 my-auto w-[75%] text-[#00eeee]`}
       style={{ zIndex: focusedWindow === "mint" ? 30 : 20 }}
     >
       <div
@@ -498,13 +517,16 @@ const MintWindow = ({
             playsInline
           />
         </div>
-        <p>{price}</p>
-        <button
-          onClick={mint}
-          className="absolute left-0 w-20 mx-auto right-0 bottom-[20%] z-30 border border-[#00eeee] p-1 px-5"
-        >
-          Mint
-        </button>
+        <div className="flex flex-col justify-center p-4 space-y-2">
+          <div className="flex items-center space-x-4">
+            <p>{priceRef.current} SOL</p>
+            <p>|</p>
+            <p>{itemsLeftRef.current}/11 left</p>
+          </div>
+          <button onClick={mint} className="border border-[#00eeee] p-1 px-5">
+            Mint
+          </button>
+        </div>
         {dots.map((dot, i) => {
           return (
             // <div
@@ -546,6 +568,46 @@ const MintWindow = ({
           );
         })}
       </div>
+      {success && (
+        <div className="absolute animate-fadeUp z-[80] inset-0 flex justify-center items-center">
+          <div className="bg-black relative text-center space-y-4 bg-opacity-70 p-4 rounded-lg">
+            <button
+              onClick={() => {
+                setSuccess(false);
+                setCopySuccess(false);
+              }}
+              className="absolute top-2 left-2"
+            >
+              <Icon path={mdiClose} className="h-5 text-red-500" />
+            </button>
+            <p className="text-green-500 text-2xl">NFT Minted!</p>
+            <button
+              onClick={copyToClipboard}
+              className="flex items-center space-x-1"
+            >
+              <Icon path={mdiContentCopy} className="h-5" />
+              <p>Copy Transaction Hash</p>
+            </button>
+            {copySuccess && (
+              <p className="text-green-500 text-sm">Copied to clipboard!</p>
+            )}
+          </div>
+        </div>
+      )}
+      {errorMessage && (
+        <div className="absolute animate-fadeUp z-[80] inset-0 flex justify-center items-center">
+          <div className="bg-black relative text-center space-y-4 bg-opacity-70 p-4 rounded-lg">
+            <button
+              onClick={() => setErrorMessage("")}
+              className="absolute top-2 left-2"
+            >
+              <Icon path={mdiClose} className="h-5 text-red-500" />
+            </button>
+            <p className="text-red-500 text-2xl">{errorMessage}</p>
+            <WalletMultiButton />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -1041,7 +1103,7 @@ const MapWindow = ({
 }) => {
   return (
     <div
-      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] top-0 ml-16 bottom-16 my-auto`}
+      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] -top-12 right-6 bottom-10 my-auto`}
       style={{ zIndex: focusedWindow === "map" ? 30 : 20 }}
     >
       <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#a6b5d4] via-[#dddddd] to-[#a6b5d4]">
@@ -1527,7 +1589,7 @@ const PersonalityTestWindow = ({
 
   return (
     <div
-      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] -top-10 right-5 bottom-16 my-auto`}
+      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] -top-10 right-10 bottom-0 my-auto`}
       style={{ zIndex: focusedWindow === "personality" ? 30 : 20 }}
     >
       <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#cea6d4] via-[#dddddd] to-[#cea6d4]">
@@ -1675,7 +1737,7 @@ const CollectionWindow = ({
     const ownedNfts = (await metaplex.nfts().findAllByOwner({ owner })).filter(
       (nft) =>
         nft.collection?.address.toString() ===
-        "HYGKcXjQftFRKLc5br3nV6rCdsnuJA1jqrAegjw6cMgq"
+        "FrKg2xBzGYWuS9BNptqryX1H2WitvY2u9u9LTYoWPdTT"
     );
 
     const newNfts = [];
@@ -1706,7 +1768,7 @@ const CollectionWindow = ({
 
   return (
     <div
-      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] -top-10 right-5 bottom-16 my-auto`}
+      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] top-10 right-16 bottom-0 my-auto`}
       style={{ zIndex: focusedWindow === "collection" ? 30 : 20 }}
     >
       <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#cea6d4] via-[#dddddd] to-[#cea6d4]">
