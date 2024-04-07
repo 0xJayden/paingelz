@@ -517,7 +517,7 @@ const MintWindow = ({
             playsInline
           />
         </div>
-        <div className="flex flex-col justify-center p-4 space-y-2">
+        <div className="flex z-30 flex-col justify-center p-4 space-y-2">
           <div className="flex items-center space-x-4">
             <p>{priceRef.current} SOL</p>
             <p>|</p>
