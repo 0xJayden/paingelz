@@ -2,14 +2,23 @@ import Image from "next/image";
 import { Inter } from "next/font/google";
 import Icon from "@mdi/react";
 import {
+  mdiArrowRight,
   mdiClose,
   mdiContentCopy,
+  mdiTrophy,
   mdiVolumeHigh,
   mdiVolumeMute,
 } from "@mdi/js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import Head from "next/head";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
@@ -1070,7 +1079,7 @@ const ColorPicker = ({
       <p>Current Color</p>
       <img src={`/${color}Paingel.png`} className="w-20 h-20" />
       <p>Select Color</p>
-      <div className="grid gap-2 grid-cols-2">
+      <div className="grid gap-2 grid-cols-3">
         {colors.map((color, i) => (
           <button
             key={i}
@@ -1091,6 +1100,55 @@ const ColorPicker = ({
   );
 };
 
+const HighScores = ({
+  setOpenHighScores,
+  setHighScores,
+  highScores,
+}: {
+  setOpenHighScores: Dispatch<SetStateAction<boolean>>;
+  setHighScores: Dispatch<SetStateAction<any[]>>;
+  highScores: any[];
+}) => {
+  useEffect(() => {
+    fetch("/api/checkHighScores")
+      .then((res) => res.json())
+      .then((data) => {
+        setHighScores(data.data);
+      });
+  }, []);
+
+  return (
+    <div className="absolute space-y-2 overflow-y-scroll sm:space-y-4 inset-0 items-center z-[60] flex p-2 bg-black flex-col">
+      <button className="self-start" onClick={() => setOpenHighScores(false)}>
+        <Icon path={mdiClose} className="h-5" />
+      </button>
+      <h1 className="text-center">High Scores</h1>
+      {highScores.map((score, i) => (
+        <div key={i} className="flex max-w-[700px] w-full justify-between">
+          <div className="flex items-center space-x-1">
+            <p
+              style={{
+                color:
+                  i === 0
+                    ? "gold"
+                    : i === 1
+                    ? "silver"
+                    : i === 2
+                    ? "brown"
+                    : "white",
+              }}
+            >
+              {i + 1}.
+            </p>
+            <p>{score.name}</p>
+          </div>
+          <p>{score.score}</p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 const GameWindow = ({
   setWindows,
   setFocusedWindow,
@@ -1108,12 +1166,25 @@ const GameWindow = ({
   const [color, setColor] = useState(
     colors[Math.floor(Math.random() * colors.length)]
   );
+  const [name, setName] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [openScores, setOpenScores] = useState(false);
+  const [gotHighScore, setGotHighScore] = useState(false);
+  const [highScores, setHighScores] = useState<any[]>([]);
 
   const requestRef = useRef<number>(0);
   const gameWindowRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<PlayerObject>();
   const score = useRef<number>(0);
   const collisionDetected = useRef<boolean>(false);
+
+  const gameOver = () => {
+    setGameStatus("over");
+    const isHighScore =
+      highScores.filter((s) => +s.score < score.current).length > 0;
+    setGotHighScore(isHighScore);
+  };
 
   const animate = () => {
     setGameObject((prev) => {
@@ -1133,7 +1204,7 @@ const GameWindow = ({
       }
 
       if (newY >= gameWindowRef.current.offsetHeight - 20) {
-        setGameStatus("over");
+        gameOver();
         return prev;
       }
 
@@ -1185,6 +1256,24 @@ const GameWindow = ({
     });
 
     requestRef.current = requestAnimationFrame(animate);
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/postScore", {
+        method: "POST",
+        body: JSON.stringify({ name, score: score.current }),
+      });
+
+      const data = await res.json();
+      setSuccessMessage(data.msg);
+      setGotHighScore(false);
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (error) {
+      setErrorMessage("Error submitting score");
+      console.error(`Error submitting score: ${error}`);
+    }
   };
 
   useEffect(() => {
@@ -1242,7 +1331,7 @@ const GameWindow = ({
 
   return (
     <div
-      className={`absolute h-[60%] md:h-[70%] animate-open w-[75%] -top-20 left-5 bottom-16 my-auto`}
+      className={`absolute h-[65%] md:h-[70%] animate-open w-[75%] -top-20 left-5 bottom-16 my-auto`}
       style={{ zIndex: focusedWindow === "game" ? 30 : 20 }}
     >
       <div
@@ -1288,9 +1377,22 @@ const GameWindow = ({
             Paingelz Game
           </p>
         </div>
-        <div className="absolute top-10 right-10">
+        <div className="absolute top-10 right-1">
           <p>Score: {score.current}</p>
         </div>
+        <button
+          onClick={() => setOpenScores(!openScores)}
+          className="absolute z-50 p-1 top-10 left-1"
+        >
+          <Icon path={mdiTrophy} className="h-5 text-yellow-500" />
+        </button>
+        {openScores && (
+          <HighScores
+            setOpenHighScores={setOpenScores}
+            setHighScores={setHighScores}
+            highScores={highScores}
+          />
+        )}
         {gameStatus === "paused" && (
           <div className="absolute space-y-2 flex-col z-30 inset-0 bg-black bg-opacity-70 flex justify-center items-center">
             <ColorPicker setColor={setColor} color={color} />
@@ -1303,9 +1405,27 @@ const GameWindow = ({
           </div>
         )}
         {gameStatus === "over" && (
-          <div className="absolute space-y-2 z-30 bg-black bg-opacity-70 inset-0 flex flex-col justify-center items-center">
-            <p className="text-white text-2xl">Game Over</p>
-            <p className="text-white text-2xl">Score: {score.current}</p>
+          <div className="absolute space-y-2 top-6 sm:justify-center overflow-y-scroll z-30 bg-black bg-opacity-70 inset-0 flex flex-col items-center p-2">
+            <p className="text-white sm:text-2xl">Game Over</p>
+            <p className="text-white sm:text-2xl">Score: {score.current}</p>
+            {gotHighScore && (
+              <>
+                <p className="text-yellow-500 sm:text-2xl">New High Score!</p>
+                <form
+                  onSubmit={handleSubmit}
+                  className="flex items-center relative"
+                >
+                  <input
+                    placeholder="enter name"
+                    className="border p-2 bg-transparent"
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <button className="absolute right-1">
+                    <Icon path={mdiArrowRight} className="h-5" />
+                  </button>
+                </form>
+              </>
+            )}
             <ColorPicker setColor={setColor} color={color} />
             <button
               className="p-2 px-4 border"
@@ -1316,6 +1436,17 @@ const GameWindow = ({
             >
               Play Again
             </button>
+          </div>
+        )}
+        {successMessage && (
+          <div className="z-[90] p-2 border border-gray-700 animate-fadeUp bg-black/80">
+            <p className="text-green-500 text-xl text-center pb-2">
+              {successMessage}
+            </p>
+            <div className="flex flex-col">
+              <p>Name: {name}</p>
+              <p>Score: {score.current}</p>
+            </div>
           </div>
         )}
         {gameObject && (
