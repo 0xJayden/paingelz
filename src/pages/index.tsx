@@ -206,6 +206,13 @@ export default function Home() {
               focusedWindow={focusedWindow}
             />
           )}
+          {windows.includes("artist") && (
+            <ArtistWindow
+              setWindows={setWindows}
+              setFocusedWindow={setFocusedWindow}
+              focusedWindow={focusedWindow}
+            />
+          )}
           <BottomNavbar
             setWindows={setWindows}
             setFocusedWindow={setFocusedWindow}
@@ -582,115 +589,80 @@ const IconContainer = ({
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
   setWindows: Dispatch<SetStateAction<Windows[]>>;
 }) => {
+  const openWindow = (window: Windows) => {
+    setWindows((prev) => {
+      if (prev.includes(window)) return prev;
+      return [...prev, window];
+    });
+    setFocusedWindow(window);
+  };
+
   return (
     <div className="absolute gap-4 gap-y-10 grid grid-cols-4 p-4 w-full z-10">
-      <MintIcon setWindows={setWindows} setFocusedWindow={setFocusedWindow} />
-      <MapIcon setWindows={setWindows} setFocusedWindow={setFocusedWindow} />
-      <GameIcon setWindows={setWindows} setFocusedWindow={setFocusedWindow} />
-      <PersonalityIcon
-        setWindows={setWindows}
-        setFocusedWindow={setFocusedWindow}
+      <IconContainerIcon
+        icon="/minticon.png"
+        text="Mint Paingelz"
+        alt="mint"
+        openWindow={() => openWindow("mint")}
       />
-      <CollectionIcon
-        setWindows={setWindows}
-        setFocusedWindow={setFocusedWindow}
+      <IconContainerIcon
+        icon="/mapicon.png"
+        text="Paingelz World"
+        alt="map"
+        openWindow={() => openWindow("map")}
+      />
+      <IconContainerIcon
+        icon="/gameicon.png"
+        text="Play Game"
+        alt="game"
+        openWindow={() => openWindow("game")}
+      />
+      <IconContainerIcon
+        icon="/brain.png"
+        text="Personality Test"
+        alt="personality"
+        openWindow={() => openWindow("personality")}
+      />
+      <IconContainerIcon
+        icon="/starsPaingel.png"
+        text="View Collection"
+        alt="collection"
+        openWindow={() => openWindow("collection")}
+      />
+      <IconContainerIcon
+        icon="/artist.png"
+        text="Meet the Artist"
+        alt="artist"
+        openWindow={() => openWindow("artist")}
       />
     </div>
   );
 };
 
-const MintIcon = ({
-  setWindows,
-  setFocusedWindow,
+const IconContainerIcon = ({
+  icon,
+  alt,
+  text,
+  openWindow,
 }: {
-  setWindows: Dispatch<SetStateAction<Windows[]>>;
-  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
+  icon: string;
+  alt: Windows;
+  text: string;
+  openWindow: () => void;
 }) => {
-  const openWindow = () => {
-    setWindows((prev) => {
-      if (prev.includes("mint")) return prev;
-      return [...prev, "mint"];
-    });
-    setFocusedWindow("mint");
-  };
-
-  return (
-    <button
-      onClick={openWindow}
-      className="h-20 flex items-center justify-center flex-col w-20"
-    >
-      <Image
-        src={"/minticon.png"}
-        width={100}
-        height={100}
-        alt="minticon"
-        className="w-10 h-10"
-      />
-      <p className="text-sm drop-shadow text-center">Mint Paingelz</p>
-    </button>
-  );
-};
-
-const MapIcon = ({
-  setWindows,
-  setFocusedWindow,
-}: {
-  setWindows: Dispatch<SetStateAction<Windows[]>>;
-  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
-}) => {
-  const openWindow = () => {
-    setWindows((prev) => {
-      if (prev.includes("map")) return prev;
-      return [...prev, "map"];
-    });
-    setFocusedWindow("map");
-  };
-
-  return (
-    <button
-      onClick={openWindow}
-      className="h-20 flex items-center justify-center flex-col w-20"
-    >
-      <Image
-        src={"/mapicon.png"}
-        width={100}
-        height={100}
-        alt="mapicon"
-        className="w-10 h-10"
-      />
-      <p className="text-sm drop-shadow text-center">Paingelz World</p>
-    </button>
-  );
-};
-
-const GameIcon = ({
-  setWindows,
-  setFocusedWindow,
-}: {
-  setWindows: Dispatch<SetStateAction<Windows[]>>;
-  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
-}) => {
-  const openWindow = () => {
-    setWindows((prev) => {
-      if (prev.includes("game")) return prev;
-      return [...prev, "game"];
-    });
-    setFocusedWindow("game");
-  };
-
   return (
     <button
       onClick={openWindow}
       className="h-20 w-20 flex items-center justify-center flex-col"
     >
       <Image
-        src={"/gameicon.png"}
-        width={100}
-        height={100}
-        alt="gameicon"
-        className="w-10 h-10"
+        src={icon}
+        width={40}
+        height={40}
+        alt={alt + "icon"}
+        className="min-h-10 min-w-10"
       />
-      <p className="text-sm drop-shadow text-center">Play Game</p>
+      <p className="text-sm drop-shadow text-center">{text}</p>
     </button>
   );
 };
@@ -778,6 +750,12 @@ const BottomNavbar = ({
           openWindow={openWindow}
           windows={windows}
         />
+        <BottomNavbarIcon
+          icon="/artist.png"
+          text="artist"
+          openWindow={openWindow}
+          windows={windows}
+        />
       </div>
     </div>
   );
@@ -846,8 +824,6 @@ const Splash = ({
       return prev.map((cloud) => {
         let newX = cloud.x + cloud.xSpeed;
         let newY = cloud.y + cloud.ySpeed;
-        // let newYSpeed = (cloud.ySpeed * 1) / cloud.yAcceleration;
-        // let newYAcceleration = cloud.yAcceleration;
 
         if (newX > window.innerWidth) {
           newX = -cloud.size;
@@ -857,14 +833,6 @@ const Splash = ({
           newX = window.innerWidth;
           newY = Math.random() * window.innerHeight;
         }
-
-        // if (newYSpeed > 6) {
-        //   // newYSpeed = -newYSpeed;
-        //   newYAcceleration = newYAcceleration;
-        // } else if (newYSpeed <= 1) {
-        //   newYSpeed = -newYSpeed;
-        //   newYAcceleration = 1.01;
-        // }
 
         return {
           x: newX,
@@ -955,28 +923,14 @@ const Splash = ({
           />
         );
       })}
-      {dots.map((dot, i) => {
-        return (
-          // <div
-          //   key={i}
-          //   id="dot"
-          //   style={{
-          //     top: dot.y + "px",
-          //     left: dot.x + "px",
-          //     backgroundColor: dot.color,
-          //     height: dot.size + "px",
-          //     width: dot.size + "px",
-          //   }}
-          //   className={`absolute rounded-full`}
-          // ></div>
-          <img
-            key={i}
-            src="/star.png"
-            style={{ top: dot.y + "px", left: dot.x + "px" }}
-            className="w-5 h-5 absolute z-50"
-          />
-        );
-      })}
+      {dots.map((dot, i) => (
+        <img
+          key={i}
+          src="/star.png"
+          style={{ top: dot.y + "px", left: dot.x + "px" }}
+          className="w-5 h-5 absolute z-50"
+        />
+      ))}
       <video
         src="/paingelzlogo.mp4"
         className="w-[50%] max-w-[700px]"
@@ -1102,6 +1056,33 @@ type PlayerObject = {
   y: number;
   height: number;
   width: number;
+};
+
+const ColorPicker = ({
+  setColor,
+  color,
+}: {
+  setColor: Dispatch<SetStateAction<string>>;
+  color: string;
+}) => {
+  return (
+    <>
+      <p>Current Color</p>
+      <img src={`/${color}Paingel.png`} className="w-20 h-20" />
+      <p>Select Color</p>
+      <div className="grid gap-2 grid-cols-2">
+        {colors.map((color, i) => (
+          <button
+            key={i}
+            onClick={() => setColor(color)}
+            className={`bg-${
+              color === "stars" ? "yellow" : color !== "blue" ? color : "cyan"
+            }-500 h-10 w-10 rounded-full`}
+          ></button>
+        ))}
+      </div>
+    </>
+  );
 };
 
 const GameWindow = ({
@@ -1306,73 +1287,20 @@ const GameWindow = ({
         </div>
         {gameStatus === "paused" && (
           <div className="absolute space-y-2 flex-col z-30 inset-0 bg-black bg-opacity-70 flex justify-center items-center">
-            <button onClick={() => setGameStatus("playing")}>
+            <ColorPicker setColor={setColor} color={color} />
+            <button
+              className="border px-4 p-2"
+              onClick={() => setGameStatus("playing")}
+            >
               <p className="text-white text-2xl">Play</p>
             </button>
-            <p>Current Color</p>
-            <img src={`/${color}Paingel.png`} className="w-20 h-20" />
-            <p>Select Color</p>
-            <div className="grid gap-2 grid-cols-2">
-              <button
-                onClick={() => setColor("red")}
-                className="bg-red-500 h-10 w-10 rounded-full"
-              ></button>
-              <button
-                onClick={() => setColor("blue")}
-                className="bg-cyan-500 h-10 w-10 rounded-full"
-              ></button>
-              <button
-                onClick={() => setColor("green")}
-                className="bg-green-500 h-10 w-10 rounded-full"
-              ></button>
-              <button
-                onClick={() => setColor("pink")}
-                className="bg-pink-500 h-10 w-10 rounded-full"
-              ></button>
-              <button
-                onClick={() => setColor("gray")}
-                className="bg-gray-500 h-10 w-10 rounded-full"
-              ></button>
-              <button
-                onClick={() => setColor("stars")}
-                className="bg-yellow-500 h-10 w-10 rounded-full"
-              ></button>
-            </div>
           </div>
         )}
         {gameStatus === "over" && (
-          <div className="absolute z-30 bg-black bg-opacity-70 inset-0 flex flex-col justify-center items-center">
-            <p className="text-white pb-4 text-2xl">Game Over</p>
-            <p className="text-white pb-4 text-2xl">Score: {score.current}</p>
-            <p>Current Color</p>
-            <img src={`/${color}Paingel.png`} className="w-20 h-20" />
-            <p>Select Color</p>
-            <div className="grid gap-2 grid-cols-2 pb-2">
-              <button
-                onClick={() => setColor("red")}
-                className="bg-red-500 h-10 w-10 rounded-full"
-              ></button>
-              <button
-                onClick={() => setColor("blue")}
-                className="bg-cyan-500 h-10 w-10 rounded-full"
-              ></button>
-              <button
-                onClick={() => setColor("green")}
-                className="bg-green-500 h-10 w-10 rounded-full"
-              ></button>
-              <button
-                onClick={() => setColor("pink")}
-                className="bg-pink-500 h-10 w-10 rounded-full"
-              ></button>
-              <button
-                onClick={() => setColor("gray")}
-                className="bg-gray-500 h-10 w-10 rounded-full"
-              ></button>
-              <button
-                onClick={() => setColor("stars")}
-                className="bg-yellow-500 h-10 w-10 rounded-full"
-              ></button>
-            </div>
+          <div className="absolute space-y-2 z-30 bg-black bg-opacity-70 inset-0 flex flex-col justify-center items-center">
+            <p className="text-white text-2xl">Game Over</p>
+            <p className="text-white text-2xl">Score: {score.current}</p>
+            <ColorPicker setColor={setColor} color={color} />
             <button
               className="p-2 px-4 border"
               onClick={() => {
@@ -1413,39 +1341,6 @@ const GameWindow = ({
   );
 };
 
-const PersonalityIcon = ({
-  setWindows,
-  setFocusedWindow,
-}: {
-  setWindows: Dispatch<SetStateAction<Windows[]>>;
-  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
-}) => {
-  const openWindow = () => {
-    setWindows((prev) => {
-      if (prev.includes("personality")) return prev;
-      return [...prev, "personality"];
-    });
-    setFocusedWindow("personality");
-  };
-
-  return (
-    <button
-      onClick={openWindow}
-      className="h-20 w-20 flex items-center justify-center flex-col"
-    >
-      <Image
-        src="/brain.png"
-        width={100}
-        height={100}
-        alt="personalityicon"
-        className="w-10 h-10"
-      />
-      <p className="text-sm drop-shadow text-center">Personality Test</p>
-    </button>
-  );
-};
-
-// personality test
 const questions = [
   {
     question: "Choose your super power.",
@@ -1667,38 +1562,6 @@ const PersonalityTestWindow = ({
   );
 };
 
-const CollectionIcon = ({
-  setWindows,
-  setFocusedWindow,
-}: {
-  setWindows: Dispatch<SetStateAction<Windows[]>>;
-  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
-}) => {
-  const openWindow = () => {
-    setWindows((prev) => {
-      if (prev.includes("collection")) return prev;
-      return [...prev, "collection"];
-    });
-    setFocusedWindow("collection");
-  };
-
-  return (
-    <button
-      onClick={openWindow}
-      className="h-20 w-20 flex items-center justify-center flex-col"
-    >
-      <Image
-        src="/starsPaingel.png"
-        width={100}
-        height={100}
-        alt="collectionicon"
-        className="w-10 h-10"
-      />
-      <p className="text-sm drop-shadow text-center">View Collection</p>
-    </button>
-  );
-};
-
 const CollectionWindow = ({
   focusedWindow,
   setWindows,
@@ -1811,49 +1674,25 @@ const CollectionWindow = ({
             <div className="bg-[#696969] animate-pulse"></div>
           </div>
         ) : (
-          status === "error" && <p className="text-center">{message}</p>
+          status === "error" && (
+            <div className="flex flex-col items-center space-y-4">
+              <p className="text-center">{message}</p>
+              {message.includes("wallet") && <WalletMultiButton />}
+            </div>
+          )
         )}
       </div>
     </div>
   );
 };
 
-const ArtistIcon = ({
-  setOpenArtist,
-  setFocusedWindow,
-}: {
-  setOpenArtist: Dispatch<SetStateAction<boolean>>;
-  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
-}) => {
-  const openWindow = () => {
-    setOpenArtist(true);
-    setFocusedWindow("artist");
-  };
-
-  return (
-    <button
-      onClick={openWindow}
-      className="h-20 w-20 flex items-center justify-center flex-col"
-    >
-      {/* <Image
-        src="/artist.png"
-        width={100}
-        height={100}
-        alt="artisticon"
-        className="w-10 h-10"
-      /> */}
-      <p className="text-sm drop-shadow text-center">Artist</p>
-    </button>
-  );
-};
-
 const ArtistWindow = ({
   focusedWindow,
-  setOpenArtist,
+  setWindows,
   setFocusedWindow,
 }: {
   focusedWindow: Windows;
-  setOpenArtist: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   return (
@@ -1863,7 +1702,9 @@ const ArtistWindow = ({
     >
       <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#cea6d4] via-[#dddddd] to-[#cea6d4]">
         <button
-          onClick={() => setOpenArtist(false)}
+          onClick={() =>
+            setWindows((prev) => prev.filter((w) => w !== "artist"))
+          }
           className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center"
         >
           <Icon path={mdiClose} className="h-3 text-black" />
@@ -1874,21 +1715,88 @@ const ArtistWindow = ({
         onClick={() => setFocusedWindow("artist")}
         className="flex h-full pt-10 p-2 relative overflow-y-scroll flex-col bg-black"
       >
-        <h2 className="text-2xl pb-4 text-center font-bold">Artist</h2>
-        <div className="flex justify-center items-center">
+        <h2 className="text-2xl pb-4 text-center font-bold">
+          Artist - Sandy Kupfer
+        </h2>
+        <div className="pb-4 flex justify-center">
           <Image
-            src="/artist.png"
-            className="w-1/2 max-w-[200px]"
-            width={300}
-            height={300}
-            alt="artist"
+            src="/art1.jpg"
+            alt="art1"
+            width={700}
+            height={400}
+            className="w-full h-full max-w-[700px]"
           />
         </div>
-        <div className="p-4 pt-0 space-y-2">
-          <p className="text-center">
-            The artist is currently working on a new collection. Stay tuned for
-            more updates!
+        <div className="p-4 text-sm pt-0 space-y-2">
+          <p className="">
+            {`Sandy Kupfer is multidisciplinary artist with a focus in painting, tattooing, and drawing. Sandy is a Los Angeles based artist who grew up in Pennsylvania. Sandy graduated with a BA in Fine Arts from Occidental College in 2022, and is set to graduate with a Master’s degree in Fine Arts from Otis College of Art and Design in December 2024. In 2023, Sandy had two solo painting exhibitions with Neo LA Gallery. More recently, Sandy showed with Ceradon Gallery in their inaugural group show “Premiere Ink” and has more shows to come.  Alongside tattooing as a resident at Da Kastle, Sandy also facilitates healing art groups in mental health and recovery centers.`}
           </p>
+          <div className="flex justify-center">
+            <Image
+              src="/art3.jpg"
+              width={220}
+              height={300}
+              alt="art3"
+              className="object-contain max-h-[300px]"
+            />
+          </div>
+          <p>{`Sandy’s work is a subversive act to encapsulate realms less frequented in spiritually high energy. Sandy dives deep into a vulnerable authenticity of self - utilizing meaningful emotive topics, expressed through intense gestural strokes and mark making. When engaging with Sandy’s work, there is a forced confrontation with raw and unfiltered heart and spirit. This process of creation derives from the honest nature of Sandy’s mentally and physically disabled brother’s art practice. Sandy is extremely close to him, and helped play the role of care taker for him until relocating. In this time, Sandy saw how her brother’s works transcended everything, to get to the core of true expression. Sandy strives to do the same.`}</p>
+          <div className="space-y-2 pt-4 xl:grid xl:grid-cols-2 xl:gap-2 xl:space-y-0 flex flex-col items-center">
+            <div className="flex justify-center">
+              <Image
+                src="/art2.jpg"
+                width={300}
+                height={300}
+                alt="art2"
+                className="object-contain max-h-[300px]"
+              />
+            </div>
+            <div className="w-full flex justify-center">
+              <Image
+                src="/art7.jpg"
+                width={220}
+                height={300}
+                alt="art7"
+                className="object-contain max-h-[300px]"
+              />
+            </div>
+            <div className="w-full flex justify-center">
+              <Image
+                src="/art4.jpg"
+                width={400}
+                height={300}
+                alt="art4"
+                className="object-contain max-h-[300px]"
+              />
+            </div>
+            <div className="w-full flex justify-center">
+              <Image
+                src="/art5.jpg"
+                width={300}
+                height={300}
+                alt="art5"
+                className="object-contain max-h-[300px]"
+              />
+            </div>
+            <div className="w-full flex justify-center">
+              <Image
+                src="/art6.jpg"
+                width={300}
+                height={300}
+                alt="art6"
+                className="object-contain max-h-[300px]"
+              />
+            </div>
+            <div className="w-full flex justify-center">
+              <Image
+                src="/art8.jpg"
+                width={260}
+                height={300}
+                alt="art8"
+                className="object-contain max-h-[300px]"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
