@@ -1102,21 +1102,11 @@ const ColorPicker = ({
 
 const HighScores = ({
   setOpenHighScores,
-  setHighScores,
   highScores,
 }: {
   setOpenHighScores: Dispatch<SetStateAction<boolean>>;
-  setHighScores: Dispatch<SetStateAction<any[]>>;
   highScores: any[];
 }) => {
-  useEffect(() => {
-    fetch("/api/checkHighScores")
-      .then((res) => res.json())
-      .then((data) => {
-        setHighScores(data.data);
-      });
-  }, []);
-
   return (
     <div className="absolute space-y-2 overflow-y-scroll sm:space-y-4 inset-0 items-center z-[60] flex p-2 bg-black flex-col">
       <button className="self-start" onClick={() => setOpenHighScores(false)}>
@@ -1277,6 +1267,12 @@ const GameWindow = ({
   };
 
   useEffect(() => {
+    fetch("/api/checkHighScores")
+      .then((res) => res.json())
+      .then((data) => {
+        setHighScores(data.data);
+      });
+
     document.addEventListener("mousemove", (e) => {
       setPlayerObject((prev) => {
         if (!prev) return prev;
@@ -1389,7 +1385,6 @@ const GameWindow = ({
         {openScores && (
           <HighScores
             setOpenHighScores={setOpenScores}
-            setHighScores={setHighScores}
             highScores={highScores}
           />
         )}
