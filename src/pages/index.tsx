@@ -1075,9 +1075,15 @@ const ColorPicker = ({
           <button
             key={i}
             onClick={() => setColor(color)}
-            className={`bg-${
-              color === "stars" ? "yellow" : color !== "blue" ? color : "cyan"
-            }-500 h-10 w-10 rounded-full`}
+            style={{
+              backgroundColor:
+                color === "stars"
+                  ? "yellow"
+                  : color !== "blue"
+                  ? color
+                  : "cyan",
+            }}
+            className="h-10 w-10 rounded-full"
           ></button>
         ))}
       </div>
