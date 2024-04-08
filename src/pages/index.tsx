@@ -1,7 +1,12 @@
 import Image from "next/image";
 import { Inter } from "next/font/google";
 import Icon from "@mdi/react";
-import { mdiClose, mdiContentCopy } from "@mdi/js";
+import {
+  mdiClose,
+  mdiContentCopy,
+  mdiVolumeHigh,
+  mdiVolumeMute,
+} from "@mdi/js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
@@ -28,19 +33,21 @@ import { Metaplex } from "@metaplex-foundation/js";
 
 const inter = Inter({ subsets: ["latin"] });
 
-type Windows = "mint" | "map" | "game" | "personality" | "collection";
+type Windows =
+  | "mint"
+  | "map"
+  | "game"
+  | "personality"
+  | "collection"
+  | "artist";
 
 export default function Home() {
-  const [openMint, setOpenMint] = useState(false);
   const [dots, setDots] = useState<Array<Dot>>([]);
   const [openSplash, setOpenSplash] = useState(true);
   const [audio, setAudio] = useState<HTMLAudioElement>();
   const [playing, setPlaying] = useState(false);
-  const [openMap, setOpenMap] = useState(false);
   const [focusedWindow, setFocusedWindow] = useState<Windows>("mint");
-  const [openGame, setOpenGame] = useState(false);
-  const [openPersonalityTest, setOpenPersonalityTest] = useState(false);
-  const [openCollection, setOpenCollection] = useState(false);
+  const [windows, setWindows] = useState<Windows[]>([]);
 
   const requestRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
@@ -69,7 +76,6 @@ export default function Home() {
           yAcceleration: newYAcceleration,
           xAcceleration: newXAcceleration,
           size: dot.size,
-          color: dot.color,
         };
       });
     });
@@ -87,7 +93,6 @@ export default function Home() {
         yAcceleration: 1.01,
         xAcceleration: 1.01,
         size: 2,
-        color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
     setDots(newDots);
@@ -100,14 +105,16 @@ export default function Home() {
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
-  useEffect(() => {
-    if (!audio) return;
-    if (playing) {
-      audio.play();
-    } else {
-      audio.pause();
+  const playOrPause = () => {
+    if (audio) {
+      if (playing) {
+        audio.pause();
+      } else {
+        audio.play();
+      }
+      setPlaying(!playing);
     }
-  }, [playing]);
+  };
 
   return (
     <main
@@ -122,8 +129,8 @@ export default function Home() {
       {openSplash ? (
         <Splash
           setOpenSplash={setOpenSplash}
-          setPlaying={setPlaying}
-          setOpenMint={setOpenMint}
+          playOrPause={playOrPause}
+          setWindows={setWindows}
         />
       ) : (
         <>
@@ -154,61 +161,55 @@ export default function Home() {
               alt="paingelzlogo"
             />
           </div>
+          <button className="absolute z-50 top-1 right-1" onClick={playOrPause}>
+            <Icon
+              path={playing ? mdiVolumeMute : mdiVolumeHigh}
+              className="h-5"
+            />
+          </button>
           <IconContainer
-            setOpenMint={setOpenMint}
-            setOpenMap={setOpenMap}
+            setWindows={setWindows}
             setFocusedWindow={setFocusedWindow}
-            setOpenGame={setOpenGame}
-            setOpenPersonalityTest={setOpenPersonalityTest}
-            setOpenCollection={setOpenCollection}
           />
-          {openMint && (
+          {windows.includes("mint") && (
             <MintWindow
-              setOpenMint={setOpenMint}
+              setWindows={setWindows}
               setFocusedWindow={setFocusedWindow}
               focusedWindow={focusedWindow}
             />
           )}
-          {openMap && (
+          {windows.includes("map") && (
             <MapWindow
-              setOpenMap={setOpenMap}
+              setWindows={setWindows}
               setFocusedWindow={setFocusedWindow}
               focusedWindow={focusedWindow}
             />
           )}
-          {openGame && (
+          {windows.includes("game") && (
             <GameWindow
-              setOpenGame={setOpenGame}
+              setWindows={setWindows}
               setFocusedWindow={setFocusedWindow}
               focusedWindow={focusedWindow}
             />
           )}
-          {openPersonalityTest && (
+          {windows.includes("personality") && (
             <PersonalityTestWindow
-              setOpenPersonalityTest={setOpenPersonalityTest}
+              setWindows={setWindows}
               setFocusedWindow={setFocusedWindow}
               focusedWindow={focusedWindow}
             />
           )}
-          {openCollection && (
+          {windows.includes("collection") && (
             <CollectionWindow
-              setOpenCollection={setOpenCollection}
+              setWindows={setWindows}
               setFocusedWindow={setFocusedWindow}
               focusedWindow={focusedWindow}
             />
           )}
           <BottomNavbar
-            setOpenMint={setOpenMint}
-            openMint={openMint}
-            setOpenMap={setOpenMap}
-            openMap={openMap}
+            setWindows={setWindows}
             setFocusedWindow={setFocusedWindow}
-            setOpenGame={setOpenGame}
-            openGame={openGame}
-            setOpenPersonalityTest={setOpenPersonalityTest}
-            openPersonalityTest={openPersonalityTest}
-            setOpenCollection={setOpenCollection}
-            openCollection={openCollection}
+            windows={windows}
           />
         </>
       )}
@@ -224,27 +225,16 @@ type Dot = {
   yAcceleration: number;
   xAcceleration?: number;
   size: number;
-  color: string;
 };
 
-const colors = [
-  "red",
-  "blue",
-  "green",
-  "yellow",
-  "indigo",
-  "pink",
-  "purple",
-  "white",
-  "cyan",
-];
+const colors = ["red", "blue", "green", "pink", "stars", "gray"];
 
 const MintWindow = ({
-  setOpenMint,
+  setWindows,
   setFocusedWindow,
   focusedWindow,
 }: {
-  setOpenMint: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
   focusedWindow: Windows;
 }) => {
@@ -284,7 +274,6 @@ const MintWindow = ({
         }
 
         if (newY >= dotContainerRef.current.offsetHeight - 20 || newY <= 10) {
-          // cloud.yAcceleration = -cloud.yAcceleration;
           cloud.ySpeed = -cloud.ySpeed;
         }
 
@@ -311,9 +300,6 @@ const MintWindow = ({
       return prev.map((dot) => {
         let newX = dot.x + dot.xSpeed;
         let newY = dot.y + dot.ySpeed * dot.yAcceleration;
-        // let newYAcceleration = dot.yAcceleration;
-
-        // if (dot.yAcceleration < 5) newYAcceleration = dot.yAcceleration + 0.02;
 
         if (
           !dotContainerRef.current?.offsetWidth ||
@@ -326,7 +312,6 @@ const MintWindow = ({
         }
 
         if (newY >= dotContainerRef.current.offsetHeight - 20 || newY <= 10) {
-          // dot.yAcceleration = -dot.yAcceleration;
           dot.ySpeed = -dot.ySpeed;
         }
 
@@ -345,7 +330,6 @@ const MintWindow = ({
           ySpeed: dot.ySpeed,
           yAcceleration: dot.yAcceleration,
           size: dot.size,
-          color: dot.color,
         };
       });
     });
@@ -372,7 +356,6 @@ const MintWindow = ({
         ySpeed: Math.random() * 2,
         yAcceleration: 1.01,
         size: 2,
-        color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
     setDots(newDots);
@@ -484,10 +467,7 @@ const MintWindow = ({
           className="absolute z-30 inset-0 cursor-default"
         ></button>
         <button
-          onClick={() => {
-            setOpenMint(false);
-            return () => cancelAnimationFrame(requestRef.current);
-          }}
+          onClick={() => setWindows((prev) => prev.filter((w) => w !== "mint"))}
           className="bg-red-500 rounded-full h-4 aspect-square flex justify-center items-center z-40 absolute top-1 left-1"
         >
           <Icon path={mdiClose} className="h-3 text-black" />
@@ -527,31 +507,14 @@ const MintWindow = ({
             Mint
           </button>
         </div>
-        {dots.map((dot, i) => {
-          return (
-            // <div
-            //   key={i}
-            //   id="dot"
-            //   style={{
-            //     top: dot.y + "px",
-            //     left: dot.x + "px",
-            //     // backgroundColor: dot.color,
-            //     color: dot.color,
-            //     height: dot.size + "px",
-            //     width: dot.size + "px",
-            //   }}
-            //   className={`absolute opacity-70 rounded-full`}
-            // >
-            //   *
-            // </div>
-            <img
-              key={i}
-              src="/star.png"
-              style={{ top: dot.y + "px", left: dot.x + "px" }}
-              className="w-3 h-3 absolute"
-            />
-          );
-        })}
+        {dots.map((dot, i) => (
+          <img
+            key={i}
+            src="/star.png"
+            style={{ top: dot.y + "px", left: dot.x + "px" }}
+            className="w-3 h-3 absolute"
+          />
+        ))}
         {clouds.map((cloud, i) => {
           return (
             <img
@@ -613,31 +576,23 @@ const MintWindow = ({
 };
 
 const IconContainer = ({
-  setOpenMint,
-  setOpenMap,
+  setWindows,
   setFocusedWindow,
-  setOpenGame,
-  setOpenPersonalityTest,
-  setOpenCollection,
 }: {
-  setOpenMint: Dispatch<SetStateAction<boolean>>;
-  setOpenMap: Dispatch<SetStateAction<boolean>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
-  setOpenGame: Dispatch<SetStateAction<boolean>>;
-  setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
-  setOpenCollection: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
 }) => {
   return (
     <div className="absolute gap-4 gap-y-10 grid grid-cols-4 p-4 w-full z-10">
-      <MintIcon setOpenMint={setOpenMint} setFocusedWindow={setFocusedWindow} />
-      <MapIcon setOpenMap={setOpenMap} setFocusedWindow={setFocusedWindow} />
-      <GameIcon setOpenGame={setOpenGame} setFocusedWindow={setFocusedWindow} />
+      <MintIcon setWindows={setWindows} setFocusedWindow={setFocusedWindow} />
+      <MapIcon setWindows={setWindows} setFocusedWindow={setFocusedWindow} />
+      <GameIcon setWindows={setWindows} setFocusedWindow={setFocusedWindow} />
       <PersonalityIcon
-        setOpenPersonalityTest={setOpenPersonalityTest}
+        setWindows={setWindows}
         setFocusedWindow={setFocusedWindow}
       />
       <CollectionIcon
-        setOpenCollection={setOpenCollection}
+        setWindows={setWindows}
         setFocusedWindow={setFocusedWindow}
       />
     </div>
@@ -645,14 +600,17 @@ const IconContainer = ({
 };
 
 const MintIcon = ({
-  setOpenMint,
+  setWindows,
   setFocusedWindow,
 }: {
-  setOpenMint: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   const openWindow = () => {
-    setOpenMint(true);
+    setWindows((prev) => {
+      if (prev.includes("mint")) return prev;
+      return [...prev, "mint"];
+    });
     setFocusedWindow("mint");
   };
 
@@ -674,14 +632,17 @@ const MintIcon = ({
 };
 
 const MapIcon = ({
-  setOpenMap,
+  setWindows,
   setFocusedWindow,
 }: {
-  setOpenMap: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   const openWindow = () => {
-    setOpenMap(true);
+    setWindows((prev) => {
+      if (prev.includes("map")) return prev;
+      return [...prev, "map"];
+    });
     setFocusedWindow("map");
   };
 
@@ -703,14 +664,17 @@ const MapIcon = ({
 };
 
 const GameIcon = ({
-  setOpenGame,
+  setWindows,
   setFocusedWindow,
 }: {
-  setOpenGame: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   const openWindow = () => {
-    setOpenGame(true);
+    setWindows((prev) => {
+      if (prev.includes("game")) return prev;
+      return [...prev, "game"];
+    });
     setFocusedWindow("game");
   };
 
@@ -731,47 +695,51 @@ const GameIcon = ({
   );
 };
 
-const BottomNavbar = ({
-  setOpenMint,
-  openMint,
-  setOpenMap,
-  openMap,
-  setFocusedWindow,
-  setOpenGame,
-  openGame,
-  setOpenPersonalityTest,
-  openPersonalityTest,
-  setOpenCollection,
-  openCollection,
+const BottomNavbarIcon = ({
+  icon,
+  text,
+  openWindow,
+  windows,
 }: {
-  setOpenMint: Dispatch<SetStateAction<boolean>>;
-  openMint: boolean;
-  setOpenMap: Dispatch<SetStateAction<boolean>>;
-  openMap: boolean;
+  icon: string;
+  text: Windows;
+  openWindow: (window: Windows) => void;
+  windows: Windows[];
+}) => {
+  return (
+    <button
+      onClick={() => openWindow(text)}
+      className="h-20 w-20 flex items-center justify-center flex-col"
+    >
+      <Image
+        src={icon}
+        width={40}
+        height={40}
+        alt={text + "icon"}
+        className="min-h-10 min-w-10"
+      />
+      {windows.includes(text) && (
+        <div className="rounded-full bg-white h-1 w-1"></div>
+      )}
+    </button>
+  );
+};
+
+const BottomNavbar = ({
+  setWindows,
+  setFocusedWindow,
+  windows,
+}: {
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
-  setOpenGame: Dispatch<SetStateAction<boolean>>;
-  openGame: boolean;
-  setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
-  openPersonalityTest: boolean;
-  setOpenCollection: Dispatch<SetStateAction<boolean>>;
-  openCollection: boolean;
+  windows: Windows[];
 }) => {
   const openWindow = (window: Windows) => {
-    if (window === "mint") {
-      setOpenMint(!openMint);
-      setFocusedWindow("mint");
-    } else if (window === "game") {
-      setOpenGame(!openGame);
-      setFocusedWindow("game");
-    } else if (window === "personality") {
-      setOpenPersonalityTest(!openPersonalityTest);
-      setFocusedWindow("personality");
-    } else if (window === "collection") {
-      setOpenCollection(!openCollection);
-      setFocusedWindow("collection");
+    if (windows.includes(window)) {
+      setWindows((prev) => prev.filter((w) => w !== window));
     } else {
-      setOpenMap(!openMap);
-      setFocusedWindow("map");
+      setWindows((prev) => [...prev, window]);
+      setFocusedWindow(window);
     }
   };
 
@@ -780,75 +748,36 @@ const BottomNavbar = ({
       <div className="bg-[#20201d]/70 space-x-2 px-2 backdrop-blur overflow-y-hidden overflow-x-scroll h-full rounded-xl flex p-1 items-center">
         <WalletMultiButton />
         <div className="h-full border border-[#555555]"></div>
-        <button
-          onClick={() => openWindow("mint")}
-          className="flex flex-col items-center space-y-1"
-        >
-          <Image
-            src={"/minticon.png"}
-            width={40}
-            height={40}
-            alt="minticon"
-            className="min-h-10 min-w-10"
-          />
-          {openMint && <div className="rounded-full bg-white h-1 w-1"></div>}
-        </button>
-        <button
-          onClick={() => openWindow("map")}
-          className="flex flex-col pb-1 items-center space-y-1 rounded-full"
-        >
-          <Image
-            className="min-h-10 min-w-10"
-            src={"/mapicon.png"}
-            alt="mapicon"
-            width={40}
-            height={40}
-          />
-          {openMap && <div className="rounded-full bg-white h-1 w-1"></div>}
-        </button>
-        <button
-          onClick={() => openWindow("game")}
-          className="flex flex-col items-center space-y-1"
-        >
-          <Image
-            className="min-h-10 min-w-10"
-            src={"/gameicon.png"}
-            alt="gameicon"
-            width={40}
-            height={40}
-          />
-          {openGame && <div className="rounded-full bg-white h-1 w-1"></div>}
-        </button>
-        <button
-          onClick={() => openWindow("personality")}
-          className="flex flex-col items-center space-y-1"
-        >
-          <Image
-            className="min-h-10 min-w-10"
-            src="/brain.png"
-            alt="personalityicon"
-            width={40}
-            height={40}
-          />
-          {openPersonalityTest && (
-            <div className="rounded-full bg-white h-1 w-1"></div>
-          )}
-        </button>
-        <button
-          onClick={() => openWindow("collection")}
-          className="flex flex-col items-center space-y-1"
-        >
-          <Image
-            className="min-h-10 min-w-10"
-            src="/starsPaingel.png"
-            alt="collectionicon"
-            width={40}
-            height={40}
-          />
-          {openCollection && (
-            <div className="rounded-full bg-white h-1 w-1"></div>
-          )}
-        </button>
+        <BottomNavbarIcon
+          icon="/minticon.png"
+          text="mint"
+          openWindow={openWindow}
+          windows={windows}
+        />
+        <BottomNavbarIcon
+          icon="/mapicon.png"
+          text="map"
+          openWindow={openWindow}
+          windows={windows}
+        />
+        <BottomNavbarIcon
+          icon="/gameicon.png"
+          text="game"
+          openWindow={openWindow}
+          windows={windows}
+        />
+        <BottomNavbarIcon
+          icon="/brain.png"
+          text="personality"
+          openWindow={openWindow}
+          windows={windows}
+        />
+        <BottomNavbarIcon
+          icon="/starsPaingel.png"
+          text="collection"
+          openWindow={openWindow}
+          windows={windows}
+        />
       </div>
     </div>
   );
@@ -865,12 +794,12 @@ type Cloud = {
 
 const Splash = ({
   setOpenSplash,
-  setPlaying,
-  setOpenMint,
+  playOrPause,
+  setWindows,
 }: {
   setOpenSplash: Dispatch<SetStateAction<boolean>>;
-  setPlaying: Dispatch<SetStateAction<boolean>>;
-  setOpenMint: Dispatch<SetStateAction<boolean>>;
+  playOrPause: () => void;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
 }) => {
   const [barWidth, setBarWidth] = useState("0%");
   const [dots, setDots] = useState<Array<Dot>>([]);
@@ -964,7 +893,6 @@ const Splash = ({
           yAcceleration: newYAcceleration,
           xAcceleration: newXAcceleration,
           size: dot.size,
-          color: dot.color,
         };
       });
     });
@@ -982,7 +910,6 @@ const Splash = ({
         yAcceleration: 1.01,
         xAcceleration: 1.01,
         size: 3,
-        color: colors[Math.floor(Math.random() * colors.length)],
       });
     }
     setDots(newDots);
@@ -1005,9 +932,9 @@ const Splash = ({
 
   const openGates = () => {
     setOpenSplash(false);
-    setPlaying(true);
+    playOrPause();
     setTimeout(() => {
-      setOpenMint(true);
+      setWindows(["mint"]);
     }, 2000);
   };
 
@@ -1093,11 +1020,11 @@ const Splash = ({
 };
 
 const MapWindow = ({
-  setOpenMap,
+  setWindows,
   setFocusedWindow,
   focusedWindow,
 }: {
-  setOpenMap: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
   focusedWindow: Windows;
 }) => {
@@ -1108,7 +1035,7 @@ const MapWindow = ({
     >
       <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#a6b5d4] via-[#dddddd] to-[#a6b5d4]">
         <button
-          onClick={() => setOpenMap(false)}
+          onClick={() => setWindows((prev) => prev.filter((w) => w !== "map"))}
           className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center"
         >
           <Icon path={mdiClose} className="h-3 text-black" />
@@ -1178,11 +1105,11 @@ type PlayerObject = {
 };
 
 const GameWindow = ({
-  setOpenGame,
+  setWindows,
   setFocusedWindow,
   focusedWindow,
 }: {
-  setOpenGame: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
   focusedWindow: Windows;
 }) => {
@@ -1190,6 +1117,9 @@ const GameWindow = ({
   const [playerObject, setPlayerObject] = useState<PlayerObject>();
   const [gameStatus, setGameStatus] = useState<"playing" | "paused" | "over">(
     "paused"
+  );
+  const [color, setColor] = useState(
+    colors[Math.floor(Math.random() * colors.length)]
   );
 
   const requestRef = useRef<number>(0);
@@ -1338,7 +1268,7 @@ const GameWindow = ({
         ></button>
         <button
           onClick={() => {
-            setOpenGame(false);
+            setWindows((prev) => prev.filter((w) => w !== "game"));
             return () => {
               document.removeEventListener("mousemove", (e) => {
                 setPlayerObject((prev) => {
@@ -1375,17 +1305,74 @@ const GameWindow = ({
           <p>Score: {score.current}</p>
         </div>
         {gameStatus === "paused" && (
-          <button
-            onClick={() => setGameStatus("playing")}
-            className="absolute z-30 inset-0 bg-black bg-opacity-70 flex justify-center items-center"
-          >
-            <p className="text-white text-2xl">Play</p>
-          </button>
+          <div className="absolute space-y-2 flex-col z-30 inset-0 bg-black bg-opacity-70 flex justify-center items-center">
+            <button onClick={() => setGameStatus("playing")}>
+              <p className="text-white text-2xl">Play</p>
+            </button>
+            <p>Current Color</p>
+            <img src={`/${color}Paingel.png`} className="w-20 h-20" />
+            <p>Select Color</p>
+            <div className="grid gap-2 grid-cols-2">
+              <button
+                onClick={() => setColor("red")}
+                className="bg-red-500 h-10 w-10 rounded-full"
+              ></button>
+              <button
+                onClick={() => setColor("blue")}
+                className="bg-cyan-500 h-10 w-10 rounded-full"
+              ></button>
+              <button
+                onClick={() => setColor("green")}
+                className="bg-green-500 h-10 w-10 rounded-full"
+              ></button>
+              <button
+                onClick={() => setColor("pink")}
+                className="bg-pink-500 h-10 w-10 rounded-full"
+              ></button>
+              <button
+                onClick={() => setColor("gray")}
+                className="bg-gray-500 h-10 w-10 rounded-full"
+              ></button>
+              <button
+                onClick={() => setColor("stars")}
+                className="bg-yellow-500 h-10 w-10 rounded-full"
+              ></button>
+            </div>
+          </div>
         )}
         {gameStatus === "over" && (
           <div className="absolute z-30 bg-black bg-opacity-70 inset-0 flex flex-col justify-center items-center">
             <p className="text-white pb-4 text-2xl">Game Over</p>
             <p className="text-white pb-4 text-2xl">Score: {score.current}</p>
+            <p>Current Color</p>
+            <img src={`/${color}Paingel.png`} className="w-20 h-20" />
+            <p>Select Color</p>
+            <div className="grid gap-2 grid-cols-2 pb-2">
+              <button
+                onClick={() => setColor("red")}
+                className="bg-red-500 h-10 w-10 rounded-full"
+              ></button>
+              <button
+                onClick={() => setColor("blue")}
+                className="bg-cyan-500 h-10 w-10 rounded-full"
+              ></button>
+              <button
+                onClick={() => setColor("green")}
+                className="bg-green-500 h-10 w-10 rounded-full"
+              ></button>
+              <button
+                onClick={() => setColor("pink")}
+                className="bg-pink-500 h-10 w-10 rounded-full"
+              ></button>
+              <button
+                onClick={() => setColor("gray")}
+                className="bg-gray-500 h-10 w-10 rounded-full"
+              ></button>
+              <button
+                onClick={() => setColor("stars")}
+                className="bg-yellow-500 h-10 w-10 rounded-full"
+              ></button>
+            </div>
             <button
               className="p-2 px-4 border"
               onClick={() => {
@@ -1412,7 +1399,7 @@ const GameWindow = ({
         {playerObject && (
           <img
             className="absolute"
-            src="/player.png"
+            src={`/${color}Paingel.png`}
             style={{
               top: playerObject.y + "px",
               left: playerObject.x + "px",
@@ -1427,14 +1414,17 @@ const GameWindow = ({
 };
 
 const PersonalityIcon = ({
-  setOpenPersonalityTest,
+  setWindows,
   setFocusedWindow,
 }: {
-  setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   const openWindow = () => {
-    setOpenPersonalityTest(true);
+    setWindows((prev) => {
+      if (prev.includes("personality")) return prev;
+      return [...prev, "personality"];
+    });
     setFocusedWindow("personality");
   };
 
@@ -1525,11 +1515,11 @@ const ColorTypes = [
 ];
 
 const PersonalityTestWindow = ({
-  setOpenPersonalityTest,
+  setWindows,
   setFocusedWindow,
   focusedWindow,
 }: {
-  setOpenPersonalityTest: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
   focusedWindow: Windows;
 }) => {
@@ -1594,7 +1584,9 @@ const PersonalityTestWindow = ({
     >
       <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#cea6d4] via-[#dddddd] to-[#cea6d4]">
         <button
-          onClick={() => setOpenPersonalityTest(false)}
+          onClick={() =>
+            setWindows((prev) => prev.filter((w) => w !== "personality"))
+          }
           className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center"
         >
           <Icon path={mdiClose} className="h-3 text-black" />
@@ -1676,14 +1668,17 @@ const PersonalityTestWindow = ({
 };
 
 const CollectionIcon = ({
-  setOpenCollection,
+  setWindows,
   setFocusedWindow,
 }: {
-  setOpenCollection: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   const openWindow = () => {
-    setOpenCollection(true);
+    setWindows((prev) => {
+      if (prev.includes("collection")) return prev;
+      return [...prev, "collection"];
+    });
     setFocusedWindow("collection");
   };
 
@@ -1706,11 +1701,11 @@ const CollectionIcon = ({
 
 const CollectionWindow = ({
   focusedWindow,
-  setOpenCollection,
+  setWindows,
   setFocusedWindow,
 }: {
   focusedWindow: Windows;
-  setOpenCollection: Dispatch<SetStateAction<boolean>>;
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
   setFocusedWindow: Dispatch<SetStateAction<Windows>>;
 }) => {
   const [nfts, setNfts] = useState<Array<{ name: string; image: string }>>();
@@ -1773,7 +1768,9 @@ const CollectionWindow = ({
     >
       <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#cea6d4] via-[#dddddd] to-[#cea6d4]">
         <button
-          onClick={() => setOpenCollection(false)}
+          onClick={() =>
+            setWindows((prev) => prev.filter((w) => w !== "collection"))
+          }
           className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center"
         >
           <Icon path={mdiClose} className="h-3 text-black" />
@@ -1816,6 +1813,83 @@ const CollectionWindow = ({
         ) : (
           status === "error" && <p className="text-center">{message}</p>
         )}
+      </div>
+    </div>
+  );
+};
+
+const ArtistIcon = ({
+  setOpenArtist,
+  setFocusedWindow,
+}: {
+  setOpenArtist: Dispatch<SetStateAction<boolean>>;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
+}) => {
+  const openWindow = () => {
+    setOpenArtist(true);
+    setFocusedWindow("artist");
+  };
+
+  return (
+    <button
+      onClick={openWindow}
+      className="h-20 w-20 flex items-center justify-center flex-col"
+    >
+      {/* <Image
+        src="/artist.png"
+        width={100}
+        height={100}
+        alt="artisticon"
+        className="w-10 h-10"
+      /> */}
+      <p className="text-sm drop-shadow text-center">Artist</p>
+    </button>
+  );
+};
+
+const ArtistWindow = ({
+  focusedWindow,
+  setOpenArtist,
+  setFocusedWindow,
+}: {
+  focusedWindow: Windows;
+  setOpenArtist: Dispatch<SetStateAction<boolean>>;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
+}) => {
+  return (
+    <div
+      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] top-10 right-16 bottom-0 my-auto`}
+      style={{ zIndex: focusedWindow === "artist" ? 30 : 20 }}
+    >
+      <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#cea6d4] via-[#dddddd] to-[#cea6d4]">
+        <button
+          onClick={() => setOpenArtist(false)}
+          className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center"
+        >
+          <Icon path={mdiClose} className="h-3 text-black" />
+        </button>
+        <p className="text-sm text-white drop-shadow font-bold">Artist</p>
+      </div>
+      <div
+        onClick={() => setFocusedWindow("artist")}
+        className="flex h-full pt-10 p-2 relative overflow-y-scroll flex-col bg-black"
+      >
+        <h2 className="text-2xl pb-4 text-center font-bold">Artist</h2>
+        <div className="flex justify-center items-center">
+          <Image
+            src="/artist.png"
+            className="w-1/2 max-w-[200px]"
+            width={300}
+            height={300}
+            alt="artist"
+          />
+        </div>
+        <div className="p-4 pt-0 space-y-2">
+          <p className="text-center">
+            The artist is currently working on a new collection. Stay tuned for
+            more updates!
+          </p>
+        </div>
       </div>
     </div>
   );
