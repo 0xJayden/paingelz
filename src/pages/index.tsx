@@ -1026,16 +1026,76 @@ const MapWindow = ({
           <p className="text-sm">{`In the celestial kingdom of Etherealia, six noble kingdoms reign over the vast expanse, each representing a different aspect of the divine realm.`}</p>
           <p className="font-bold pt-2">{`1. **Seraphin Kingdom**: (Star Ones)`}</p>
           <p className="text-sm">{`Symbolizing purity and transcendence, Seraphins hails from the gleaming city of Lumina, situated atop the highest peak in Etherealia. Its members possess ethereal beauty and radiant powers, revered as the epitome of angelic grace. They serve as guardians of the realm, their luminescent presence warding off the malevolent forces of House Red. Seraphins kingdoms leader, the archangel Lumiel, is revered as the paragon of virtue and wisdom.`}</p>
+          <p className="font-semibold text-center">Leader of star paingelz</p>
+          <div className="flex justify-center items-center">
+            <Image
+              src={"/star1o1.jpg"}
+              width={200}
+              height={200}
+              alt="star 1 of 1"
+            />
+          </div>
+          <p className="text-sm">{`Lumiel - an arcangel often looked at the divine leader of the entire paingelz existence (most valuable paingel)`}</p>
           <p className="font-bold pt-2">{`2. **Infernals**: (Red)`}</p>
           <p className="text-sm">{`Emerging from the fiery depths of Infernia, the city of brimstone and despair, Los diablos embodies darkness and temptation. Its denizens, known as the infernals, wield formidable powers fueled by malice and ambition. Led by the enigmatic Fallen Seraph, Malphas, they seek to spread chaos and corruption throughout Etherealia, locked in eternal conflict with the forces of light.`}</p>
+          <p className="font-semibold text-center">Leader of red paingelz</p>
+          <div className="flex justify-center items-center">
+            <Image
+              src={"/red1o1.jpg"}
+              width={200}
+              height={200}
+              alt="red 1 of 1"
+            />
+          </div>
+          <p className="text-sm">{`Malphas - formerly a seraphin top Angel who has fallen and seeks to cause corruption and evil through out etherelia`}</p>
           <p className="font-bold pt-2">{`3. **Cascadiel Kingdom**: (Blue)`}</p>
           <p className="text-sm">{`Nestled beneath the ocean's depths lies the city of Aquatica, home to Cascadiels. These aquatic angels harness the power of the sea, commanding mighty waves and currents. They are adept at navigating both the tranquil depths and treacherous waters, often serving as ambassadors between Etherealia and other realms. Despite their serene appearance, Cascadiels harbors a deep-seated rivalry with House Grey, stemming from ancient conflicts over territorial boundaries.`}</p>
+          <p className="font-semibold text-center">Leader of blue paingelz</p>
+          <div className="flex justify-center items-center">
+            <Image
+              src={"/blue1o1.jpg"}
+              width={200}
+              height={200}
+              alt="blue 1 of 1"
+            />
+          </div>
+          <p className="text-sm">{`Marithiel- ruler of the sea and everything under it marithiel is controversial for his beef with the gray paingelz`}</p>
           <p className="font-bold pt-2">{`4. **Ghastiel Kingdom**: (Gray)`}</p>
           <p className="text-sm">{`Dwelling within the mist-shrouded city of Spectra, Ghastiels comprises spectral beings who straddle the line between the corporeal and the ethereal. Ghostly in appearance, they possess the ability to traverse the realms of the living and the dead, serving as guides for lost souls. Despite their neutrality, Ghastiels often finds themselves caught in the crossfire of the celestial conflict, their ethereal city serving as a battleground for opposing forces.`}</p>
+          <p className="font-semibold text-center">Leader of gray paingelz</p>
+          <div className="flex justify-center items-center">
+            <Image
+              src={"/gray1o1.jpg"}
+              width={200}
+              height={200}
+              alt="gray 1 of 1"
+            />
+          </div>
+          <p className="text-sm">{`Casper - the leader of guiding lost souls and helping them often Casper has conflict with marithiel`}</p>
           <p className="font-bold pt-2">{`5. **Cherublossom Realm**: (Pink)`}</p>
           <p className="text-sm">{`Radiating with compassion and healing energy, Cherrublossoms call the blossoming city of Elysium home. Its members are adept healers and nurturers, possessing the ability to mend both body and spirit. They are known for their unwavering empathy and kindness, often extending their aid to those in need. Despite their benevolent nature, cherrublossoms faces disdain from some members of House Green, who view their pacifism as a sign of weakness.`}</p>
+          <p className="font-semibold text-center">Leader of pink paingelz</p>
+          <div className="flex justify-center items-center">
+            <Image
+              src={"/pink1o1.jpg"}
+              width={200}
+              height={200}
+              alt="pink 1 of 1"
+            />
+          </div>
+          <p className="text-sm">{`Roselith - the only female leader in the paingelz kingdom etherelia she leads with love and light first often being mistaken for kindness and prone for attack from other kingdoms`}</p>
           <p className="font-bold pt-2">{`6. **Pridwin kingdom**: (Green)`}</p>
           <p className="text-sm">{`Hailing from the verdant city of Sylvanis, Pridwins embodies cunning and resourcefulness. These stealthy angels are skilled in the arts of espionage and subterfuge, often operating in the shadows to gather intelligence and thwart their enemies' plans. While they possess a strong sense of loyalty to their allies, Pridwins ambition sometimes leads them into conflict with other houses, particularly Cherrublossom, whom they perceive as naive and vulnerable.`}</p>
+          <p className="font-semibold text-center">Leader of green paingelz</p>
+          <div className="flex justify-center items-center">
+            <Image
+              src={"/green1o1.jpg"}
+              width={200}
+              height={200}
+              alt="green 1 of 1"
+            />
+          </div>
+          <p className="text-sm">{`Grimleaf - not to be trusted grimleaf who rules in the Forrest is often plotting and scheming for his next attack. Him and his paingelz are very dangerous`}</p>
           <div className="py-8 w-full text-center">---------</div>
           <p className="text-sm">{`Throughout the ages, the celestial kingdom of Etherealia has been embroiled in a perpetual struggle for dominance, as the six noble kingdoms vie for supremacy over the realm. Rivalries run deep, alliances shift like the tides, and the fate of Etherealia hangs in the balance as the forces of light and darkness clash in an eternal battle for control.`}</p>
           <p className="text-sm">{`In the depths of Etherealia, beyond the shimmering cities and celestial palaces, lies the Veil of Sorrow, a realm shrouded in darkness and despair. It is here that the paingelz
