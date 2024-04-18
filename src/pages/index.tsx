@@ -523,6 +523,7 @@ const MintWindow = ({
             Mint
           </button>
         </div>
+        <p className="text-xs p-2 text-white/30">{`Paingelz is an art project with no intrinsic value or expectation of financial return. Paingelz is completely useless and for entertainment purposes only. When you purchase Paingelz, you are agreeing that you have seen this disclaimer.`}</p>
         {dots.map((dot, i) => (
           <img
             key={i}
