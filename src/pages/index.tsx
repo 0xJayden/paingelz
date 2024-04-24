@@ -431,6 +431,9 @@ const MintWindow = ({
     try {
       const nftMint = generateSigner(umi);
 
+      console.log(candyGuard);
+      console.log(candyMachine);
+
       const transaction = transactionBuilder()
         .add(setComputeUnitLimit(umi, { units: 800000 }))
         .add(
@@ -441,6 +444,9 @@ const MintWindow = ({
             collectionMint: candyMachine.collectionMint,
             collectionUpdateAuthority: candyMachine.authority,
             mintArgs: {
+              mintLimit: some({
+                id: 1,
+              }),
               solPayment: some({
                 destination: publicKey(
                   "CXgv23cJYyezFK8F5kioHdM6VuRFg1SeKp3Yt72w2Ede"
