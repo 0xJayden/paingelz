@@ -268,7 +268,7 @@ const MintWindow = ({
 
   const wallet = useWallet();
 
-  const umi = createUmi("https://api.devnet.solana.com")
+  const umi = createUmi(process.env.NEXT_PUBLIC_ENDPOINT as string)
     .use(walletAdapterIdentity(wallet))
     .use(mplCandyMachine())
     .use(mplTokenMetadata());
@@ -395,7 +395,7 @@ const MintWindow = ({
   const getNftInfo = async () => {
     const candyMachine = await fetchCandyMachine(
       umi,
-      publicKey("DutpptvYwFwbHQH2Cbr5v4SDCCCAk9LDfNASa9sBYBTn")
+      publicKey("EZ6aWvaBmhZNLRsbDn5BBSoGfd3Nz8sx5Bv23DLecFUg")
     );
 
     const candyGuard = await safeFetchCandyGuard(
@@ -420,7 +420,7 @@ const MintWindow = ({
 
     const candyMachine = await fetchCandyMachine(
       umi,
-      publicKey("DutpptvYwFwbHQH2Cbr5v4SDCCCAk9LDfNASa9sBYBTn")
+      publicKey("EZ6aWvaBmhZNLRsbDn5BBSoGfd3Nz8sx5Bv23DLecFUg")
     );
 
     const candyGuard = await safeFetchCandyGuard(
@@ -443,7 +443,7 @@ const MintWindow = ({
             mintArgs: {
               solPayment: some({
                 destination: publicKey(
-                  "GgKt7kZNTQmi8J3TPPay7bk2G1VtJsV8gipfzyGajm8Z"
+                  "CXgv23cJYyezFK8F5kioHdM6VuRFg1SeKp3Yt72w2Ede"
                 ),
               }),
             },
@@ -517,7 +517,7 @@ const MintWindow = ({
           <div className="flex items-center space-x-4">
             <p>{priceRef.current} SOL</p>
             <p>|</p>
-            <p>{itemsLeftRef.current}/11 left</p>
+            <p>{itemsLeftRef.current}/10000 left</p>
           </div>
           <button onClick={mint} className="border border-[#00eeee] p-1 px-5">
             Mint
@@ -1772,7 +1772,7 @@ const CollectionWindow = ({
 
   const { wallet, connected } = useWallet();
 
-  const connection = new Connection("https://api.devnet.solana.com");
+  const connection = new Connection(process.env.NEXT_PUBLIC_ENDPOINT as string);
   const metaplex = new Metaplex(connection);
 
   const getNfts = async () => {
@@ -1788,7 +1788,7 @@ const CollectionWindow = ({
     const ownedNfts = (await metaplex.nfts().findAllByOwner({ owner })).filter(
       (nft) =>
         nft.collection?.address.toString() ===
-        "FrKg2xBzGYWuS9BNptqryX1H2WitvY2u9u9LTYoWPdTT"
+        "Cm1Srq41fh25Px69Huo4WuzgUb8jLV8wzDJqJAA1bVZY"
     );
 
     const newNfts = [];
