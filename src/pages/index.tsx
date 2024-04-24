@@ -431,9 +431,6 @@ const MintWindow = ({
     try {
       const nftMint = generateSigner(umi);
 
-      console.log(candyGuard);
-      console.log(candyMachine);
-
       const transaction = transactionBuilder()
         .add(setComputeUnitLimit(umi, { units: 800000 }))
         .add(
@@ -520,14 +517,15 @@ const MintWindow = ({
           />
         </div>
         <div className="flex z-30 flex-col justify-center p-4 space-y-2">
-          <div className="flex items-center space-x-4">
+          {/* <div className="flex items-center space-x-4">
             <p>{priceRef.current} SOL</p>
             <p>|</p>
             <p>{itemsLeftRef.current}/10000 left</p>
           </div>
           <button onClick={mint} className="border border-[#00eeee] p-1 px-5">
             Mint
-          </button>
+          </button> */}
+          <p>Mint Not Live</p>
         </div>
         <p className="text-xs p-2 text-white/30">{`Paingelz is an art project with no intrinsic value or expectation of financial return. Paingelz is completely useless and for entertainment purposes only. When you purchase Paingelz, you are agreeing that you have seen this disclaimer.`}</p>
         {dots.map((dot, i) => (
