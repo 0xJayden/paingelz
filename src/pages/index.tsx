@@ -259,6 +259,7 @@ const MintWindow = ({
   const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
+  const [mintAmount, setMintAmount] = useState(1);
 
   const dotContainerRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
@@ -431,37 +432,39 @@ const MintWindow = ({
     try {
       const nftMint = generateSigner(umi);
 
-      const transaction = transactionBuilder()
-        .add(setComputeUnitLimit(umi, { units: 800000 }))
-        .add(
-          mintV2(umi, {
-            candyMachine: candyMachine.publicKey,
-            candyGuard: candyGuard?.publicKey,
-            nftMint,
-            collectionMint: candyMachine.collectionMint,
-            collectionUpdateAuthority: candyMachine.authority,
-            mintArgs: {
-              mintLimit: some({
-                id: 1,
-              }),
-              solPayment: some({
-                destination: publicKey(
-                  "CXgv23cJYyezFK8F5kioHdM6VuRFg1SeKp3Yt72w2Ede"
-                ),
-              }),
-            },
-          })
-        );
+      for (let i = 0; i < mintAmount; i++) {
+        const transaction = transactionBuilder()
+          .add(setComputeUnitLimit(umi, { units: 800000 }))
+          .add(
+            mintV2(umi, {
+              candyMachine: candyMachine.publicKey,
+              candyGuard: candyGuard?.publicKey,
+              nftMint,
+              collectionMint: candyMachine.collectionMint,
+              collectionUpdateAuthority: candyMachine.authority,
+              mintArgs: {
+                mintLimit: some({
+                  id: 1,
+                }),
+                solPayment: some({
+                  destination: publicKey(
+                    "CXgv23cJYyezFK8F5kioHdM6VuRFg1SeKp3Yt72w2Ede"
+                  ),
+                }),
+              },
+            })
+          );
 
-      const { signature } = await transaction.sendAndConfirm(umi, {
-        confirm: { commitment: "confirmed" },
-      });
+        const { signature } = await transaction.sendAndConfirm(umi, {
+          confirm: { commitment: "confirmed" },
+        });
 
-      const txid = base58.deserialize(signature)[0];
-      txhashRef.current = txid;
-      await getNftInfo();
-      setSuccess(true);
-      console.log(`Minted NFT with txid: ${txid}`);
+        const txid = base58.deserialize(signature)[0];
+        txhashRef.current = txid;
+        await getNftInfo();
+        setSuccess(true);
+        console.log(`Minted NFT with txid: ${txid}`);
+      }
     } catch (error) {
       console.error(`Error minting NFT: ${error}`);
     }
@@ -474,7 +477,7 @@ const MintWindow = ({
 
   return (
     <div
-      className={`absolute animate-open top-[100px] h-[55%] sm:h-[70%] overflow-hidden right-2 my-auto w-[75%] text-[#00eeee]`}
+      className={`absolute animate-open top-[100px] h-[63%] sm:h-[70%] overflow-hidden right-2 my-auto w-[75%] text-[#00eeee]`}
       style={{ zIndex: focusedWindow === "mint" ? 30 : 20 }}
     >
       <div
@@ -517,15 +520,24 @@ const MintWindow = ({
           />
         </div>
         <div className="flex z-30 flex-col justify-center p-4 space-y-2">
-          {/* <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4">
             <p>{priceRef.current} SOL</p>
             <p>|</p>
             <p>{itemsLeftRef.current}/10000 left</p>
           </div>
           <button onClick={mint} className="border border-[#00eeee] p-1 px-5">
             Mint
-          </button> */}
-          <p>Mint Not Live</p>
+          </button>
+          <div className="flex flex-col justify-center">
+            <p className="text-center">Mint Amount</p>
+            <input
+              type="number"
+              value={mintAmount}
+              onChange={(e) => setMintAmount(Number(e.target.value))}
+              className="border border-[#00eeee] p-1 bg-white/20 text-center"
+            />
+          </div>
+          {/* <p>Mint Not Live</p> */}
         </div>
         <p className="text-xs p-2 text-white/30">{`Paingelz is an art project with no intrinsic value or expectation of financial return. Paingelz is completely useless and for entertainment purposes only. When you purchase Paingelz, you are agreeing that you have seen this disclaimer.`}</p>
         {dots.map((dot, i) => (
