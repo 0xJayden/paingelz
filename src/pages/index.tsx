@@ -259,7 +259,7 @@ const MintWindow = ({
   const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
-  const [mintAmount, setMintAmount] = useState(1);
+  const [mintAmount, setMintAmount] = useState<number | null>(1);
 
   const dotContainerRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>(0);
@@ -432,6 +432,11 @@ const MintWindow = ({
     try {
       const nftMint = generateSigner(umi);
 
+      if (!mintAmount || mintAmount < 1 || mintAmount > 35) {
+        setErrorMessage("Please enter a valid mint amount");
+        return;
+      }
+
       for (let i = 0; i < mintAmount; i++) {
         const transaction = transactionBuilder()
           .add(setComputeUnitLimit(umi, { units: 800000 }))
@@ -532,12 +537,15 @@ const MintWindow = ({
             <p className="text-center">Mint Amount</p>
             <input
               type="number"
-              value={mintAmount}
-              onChange={(e) => setMintAmount(Number(e.target.value))}
+              value={mintAmount ? mintAmount : ""}
+              onChange={(e) => {
+                if (+e.target.value >= 35) return setMintAmount(35);
+                if (+e.target.value < 0) return setMintAmount(1);
+                setMintAmount(Number(e.target.value));
+              }}
               className="border border-[#00eeee] p-1 bg-white/20 text-center"
             />
           </div>
-          {/* <p>Mint Not Live</p> */}
         </div>
         <p className="text-xs p-2 text-white/30">{`Paingelz is an art project with no intrinsic value or expectation of financial return. Paingelz is completely useless and for entertainment purposes only. When you purchase Paingelz, you are agreeing that you have seen this disclaimer.`}</p>
         {dots.map((dot, i) => (
