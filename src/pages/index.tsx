@@ -265,7 +265,7 @@ const MintWindow = ({
   const requestRef = useRef<number>(0);
   const priceRef = useRef<number>(0);
   const itemsLeftRef = useRef<number>(0);
-  const txhashRef = useRef<string>("");
+  const txhashRef = useRef<string[]>([]);
 
   const wallet = useWallet();
 
@@ -437,6 +437,7 @@ const MintWindow = ({
         return;
       }
 
+      const txs = [];
       for (let i = 0; i < mintAmount; i++) {
         const transaction = transactionBuilder()
           .add(setComputeUnitLimit(umi, { units: 800000 }))
@@ -460,23 +461,35 @@ const MintWindow = ({
             })
           );
 
-        const { signature } = await transaction.sendAndConfirm(umi, {
-          confirm: { commitment: "confirmed" },
-        });
-
-        const txid = base58.deserialize(signature)[0];
-        txhashRef.current = txid;
-        await getNftInfo();
-        setSuccess(true);
-        console.log(`Minted NFT with txid: ${txid}`);
+        txs.push(
+          transaction.sendAndConfirm(umi, {
+            confirm: { commitment: "confirmed" },
+          })
+        );
       }
+
+      const results = await Promise.all(txs);
+
+      const txids = results.map(
+        ({ signature }) => base58.deserialize(signature)[0]
+      );
+
+      txhashRef.current = txids;
+
+      txids.forEach((txid) => {
+        console.log(`Minted NFT with txid: ${txid}`);
+      });
+      await getNftInfo();
+      setSuccess(true);
     } catch (error) {
       console.error(`Error minting NFT: ${error}`);
     }
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(txhashRef.current);
+    navigator.clipboard.writeText(
+      txhashRef.current.map((txid) => txid).join(", ")
+    );
     setCopySuccess(true);
   };
 
