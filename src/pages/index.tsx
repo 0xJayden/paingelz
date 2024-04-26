@@ -39,6 +39,7 @@ import { setComputeUnitLimit } from "@metaplex-foundation/mpl-toolbox";
 import { base58 } from "@metaplex-foundation/umi/serializers";
 import { Connection } from "@solana/web3.js";
 import { Metaplex } from "@metaplex-foundation/js";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -48,6 +49,7 @@ type Windows =
   | "game"
   | "personality"
   | "collection"
+  | "socials"
   | "artist";
 
 export default function Home() {
@@ -217,6 +219,13 @@ export default function Home() {
           )}
           {windows.includes("artist") && (
             <ArtistWindow
+              setWindows={setWindows}
+              setFocusedWindow={setFocusedWindow}
+              focusedWindow={focusedWindow}
+            />
+          )}
+          {windows.includes("socials") && (
+            <SocialsWindow
               setWindows={setWindows}
               setFocusedWindow={setFocusedWindow}
               focusedWindow={focusedWindow}
@@ -495,7 +504,7 @@ const MintWindow = ({
 
   return (
     <div
-      className={`absolute animate-open top-[100px] h-[63%] sm:h-[70%] overflow-hidden right-2 my-auto w-[75%] text-[#00eeee]`}
+      className={`absolute animate-open top-[100px] h-[70%] overflow-hidden right-2 my-auto w-[75%] text-[#00eeee]`}
       style={{ zIndex: focusedWindow === "mint" ? 30 : 20 }}
     >
       <div
@@ -560,7 +569,22 @@ const MintWindow = ({
             />
           </div>
         </div>
-        <p className="text-xs p-2 text-white/30">{`Paingelz is an art project with no intrinsic value or expectation of financial return. Paingelz is completely useless and for entertainment purposes only. When you purchase Paingelz, you are agreeing that you have seen this disclaimer.`}</p>
+        <div className="space-x-2 pb-1">
+          <Link
+            className="p-1 flex items-center space-x-1 border text-white "
+            href={"https://www.tensor.trade/trade/paingelz"}
+          >
+            <p>Tensor</p>
+            <Icon path={mdiArrowRight} className="h-4" />
+          </Link>
+          {/* <Link
+            className="p-1 border border-[#ee00ee] text-[#ee00ee]"
+            href={"https://magiceden.io/marketplace/paingelz"}
+          >
+            Magic Eden
+          </Link> */}
+        </div>
+        <p className="text-xs leading-3 p-2 text-white/30">{`Paingelz is an art project with no intrinsic value or expectation of financial return. Paingelz is completely useless and for entertainment purposes only. When you purchase Paingelz, you are agreeing that you have seen this disclaimer.`}</p>
         {dots.map((dot, i) => (
           <img
             key={i}
@@ -669,6 +693,12 @@ const IconContainer = ({
         text="Personality Test"
         alt="personality"
         openWindow={() => openWindow("personality")}
+      />
+      <IconContainerIcon
+        icon="/clouds.png"
+        text="Socials"
+        alt="socials"
+        openWindow={() => openWindow("socials")}
       />
       <IconContainerIcon
         icon="/starsPaingel.png"
@@ -788,6 +818,12 @@ const BottomNavbar = ({
         <BottomNavbarIcon
           icon="/brain.png"
           text="personality"
+          openWindow={openWindow}
+          windows={windows}
+        />
+        <BottomNavbarIcon
+          icon="/clouds.png"
+          text="socials"
           openWindow={openWindow}
           windows={windows}
         />
@@ -2027,6 +2063,55 @@ const ArtistWindow = ({
               />
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const SocialsWindow = ({
+  setWindows,
+  setFocusedWindow,
+  focusedWindow,
+}: {
+  setWindows: Dispatch<SetStateAction<Windows[]>>;
+  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
+  focusedWindow: Windows;
+}) => {
+  return (
+    <div
+      className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] top-10 right-16 bottom-0 my-auto`}
+      style={{ zIndex: focusedWindow === "socials" ? 30 : 20 }}
+    >
+      <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#a6d4a7] via-[#dddddd] to-[#a6d4a7]">
+        <button
+          onClick={() =>
+            setWindows((prev) => prev.filter((w) => w !== "socials"))
+          }
+          className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center"
+        >
+          <Icon path={mdiClose} className="h-3 text-black" />
+        </button>
+        <p className="text-sm text-white drop-shadow font-bold">Socials</p>
+      </div>
+      <div
+        onClick={() => setFocusedWindow("socials")}
+        className="flex h-full pt-10 p-2 relative overflow-y-scroll flex-col bg-black"
+      >
+        <h2 className="text-2xl pb-4 text-center font-bold">Socials</h2>
+        <div className="grid gap-2 grid-cols-2">
+          <Link
+            className="p-1 border text-center"
+            href={"https://twitter.com/paingelz"}
+          >
+            X/Twitter
+          </Link>
+          <Link
+            className="p-1 border text-center"
+            href={"https://t.me/paingelzportal"}
+          >
+            Telegram
+          </Link>
         </div>
       </div>
     </div>
