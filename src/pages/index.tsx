@@ -546,8 +546,8 @@ const MintWindow = ({
             playsInline
           />
         </div>
-        <div className="flex z-30 flex-col justify-center p-4 space-y-2">
-          <div className="flex items-center space-x-4">
+        <div className="flex z-30 text-center flex-col justify-center p-2 space-y-1">
+          {/* <div className="flex items-center space-x-4">
             <p>{priceRef.current} SOL</p>
             <p>|</p>
             <p>{itemsLeftRef.current}/10000 left</p>
@@ -567,9 +567,11 @@ const MintWindow = ({
               }}
               className="border border-[#00eeee] p-1 bg-white/20 text-center"
             />
-          </div>
+          </div> */}
+          <p>Minted Out!</p>
+          <p>Find Paingelz at</p>
         </div>
-        <div className="space-x-2 pb-1">
+        <div className="space-x-2 pb-2 flex">
           <Link
             className="p-1 flex items-center space-x-1 border text-white "
             href={"https://www.tensor.trade/trade/paingelz"}
@@ -577,12 +579,23 @@ const MintWindow = ({
             <p>Tensor</p>
             <Icon path={mdiArrowRight} className="h-4" />
           </Link>
-          {/* <Link
-            className="p-1 border border-[#ee00ee] text-[#ee00ee]"
-            href={"https://magiceden.io/marketplace/paingelz"}
+          <Link
+            className="p-1 border border-[#ee00ee] flex items-center space-x-1 text-[#ee00ee]"
+            href={"https://magiceden.io/marketplace/paingelz_"}
           >
-            Magic Eden
-          </Link> */}
+            <p>Magic Eden</p>
+            <Icon path={mdiArrowRight} className="h-4" />
+          </Link>
+        </div>
+        <div className="flex flex-col space-y-2 justify-center items-center">
+          <p>Join the community</p>
+          <Link
+            className="p-1 flex space-x-1 items-center border text-center border-[#00eeee] "
+            href={"https://t.me/paingelzportal"}
+          >
+            <p>Telegram</p>
+            <Icon path={mdiArrowRight} className="h-4" />
+          </Link>
         </div>
         <p className="text-xs leading-3 p-2 text-white/30">{`Paingelz is an art project with no intrinsic value or expectation of financial return. Paingelz is completely useless and for entertainment purposes only. When you purchase Paingelz, you are agreeing that you have seen this disclaimer.`}</p>
         {dots.map((dot, i) => (
@@ -696,7 +709,7 @@ const IconContainer = ({
       />
       <IconContainerIcon
         icon="/clouds.png"
-        text="Socials"
+        text="Community"
         alt="socials"
         openWindow={() => openWindow("socials")}
       />
@@ -2092,13 +2105,13 @@ const SocialsWindow = ({
         >
           <Icon path={mdiClose} className="h-3 text-black" />
         </button>
-        <p className="text-sm text-white drop-shadow font-bold">Socials</p>
+        <p className="text-sm text-white drop-shadow font-bold">Community</p>
       </div>
       <div
         onClick={() => setFocusedWindow("socials")}
         className="flex h-full pt-10 p-2 relative overflow-y-scroll flex-col bg-black"
       >
-        <h2 className="text-2xl pb-4 text-center font-bold">Socials</h2>
+        <h2 className="text-2xl pb-4 text-center font-bold">Community</h2>
         <div className="grid gap-2 grid-cols-2">
           <Link
             className="p-1 border text-center"
