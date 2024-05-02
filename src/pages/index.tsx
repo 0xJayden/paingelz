@@ -507,25 +507,25 @@ const MintWindow = ({
       className={`absolute animate-open top-[100px] h-[70%] overflow-hidden right-2 my-auto w-[75%] text-[#00eeee]`}
       style={{ zIndex: focusedWindow === "mint" ? 30 : 20 }}
     >
+      <button
+        onClick={() => setFocusedWindow("mint")}
+        className="absolute z-50 inset-0 cursor-default"
+      ></button>
+      <button
+        onClick={() => setWindows((prev) => prev.filter((w) => w !== "mint"))}
+        className="bg-red-500 rounded-full h-4 aspect-square flex justify-center items-center z-[70] absolute top-1 left-1"
+      >
+        <Icon path={mdiClose} className="h-3 text-black" />
+      </button>
+      <div className="items-center rounded-t absolute z-[60] w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#c4c49a] via-[#eeeeee] to-[#c4c49a]">
+        <p className="text-white pl-6 text-sm drop-shadow font-bold">
+          Paingelz Mint
+        </p>
+      </div>
       <div
         ref={dotContainerRef}
-        className="flex flex-col h-full justify-center items-center relative border-2 rounded bg-black"
+        className="flex overflow-y-scroll z-50 flex-col h-full relative border-2 rounded bg-black"
       >
-        <button
-          onClick={() => setFocusedWindow("mint")}
-          className="absolute z-30 inset-0 cursor-default"
-        ></button>
-        <button
-          onClick={() => setWindows((prev) => prev.filter((w) => w !== "mint"))}
-          className="bg-red-500 rounded-full h-4 aspect-square flex justify-center items-center z-40 absolute top-1 left-1"
-        >
-          <Icon path={mdiClose} className="h-3 text-black" />
-        </button>
-        <div className="items-center absolute z-20 w-full space-x-2 flex top-0 left-0 h-6 p-1 right-0 bg-gradient-to-r from-[#c4c49a] via-[#eeeeee] to-[#c4c49a]">
-          <p className="text-white pl-6 text-sm drop-shadow font-bold">
-            Paingelz Mint
-          </p>
-        </div>
         <div className="flex w-full justify-center items-center">
           <video
             className="h-full w-[150px]"
@@ -571,7 +571,7 @@ const MintWindow = ({
           <p>Minted Out!</p>
           <p>Find Paingelz at</p>
         </div>
-        <div className="space-x-2 pb-2 flex">
+        <div className="space-x-2 justify-center z-30 pb-2 flex">
           <Link
             className="p-1 flex items-center space-x-1 border text-white "
             href={"https://www.tensor.trade/trade/paingelz"}
