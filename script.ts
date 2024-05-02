@@ -1,76 +1,64 @@
 import { Metaplex } from "@metaplex-foundation/js";
-import {
-  Connection,
-  ParsedAccountData,
-  PublicKey,
-  clusterApiUrl,
-} from "@solana/web3.js";
+import { Connection, ParsedAccountData, PublicKey } from "@solana/web3.js";
 import fs from "fs";
 
 const main = async () => {
   // if (!fs.existsSync("./snapshot")) fs.mkdirSync("./snapshot");
 
-  const connection = new Connection(
-    `https://ancient-boldest-aura.solana-mainnet.quiknode.pro/${process.env.QUICKNODE_API_KEY}/`
-  );
-  const metaplex = new Metaplex(connection);
+  const nfts = fs.readFileSync("./snapshot/paingelz/allnfts.json", "utf-8");
 
-  //   const data = await metaplex.nfts().findAllByCreator({
-  //     creator: new PublicKey("3dNZmWCMDs9EsXDVsAEz7yhzjUSY2r33wHPMnYMxfZdX"),
-  //   });
-  //   fs.writeFileSync("./snapshot/snapshot.json", JSON.stringify(data));
+  const data = JSON.parse(nfts);
 
-  const snapshot = fs.readFileSync("./snapshot/snapshot.json", "utf8");
-  const parsedSnapshot = JSON.parse(snapshot);
+  const hashes: string[] = [];
 
-  const wallets: any[] = [];
+  data.forEach((nft: any) => {
+    hashes.push(nft.mintAddress);
+  });
 
-  for (let i = 0; i < parsedSnapshot.length; i++) {
-    const address = new PublicKey(parsedSnapshot[i].mintAddress);
+  fs.writeFileSync("./snapshot/paingelz/hashes.json", JSON.stringify(hashes));
 
-    const largestAccount = await connection.getTokenLargestAccounts(address);
+  // const connection = new Connection(
+  //   // `https://ancient-boldest-aura.solana-mainnet.quiknode.pro/${process.env.QUICKNODE_API_KEY}/`
+  //   `https://burned-yolo-field.solana-mainnet.quiknode.pro/6f52ca71d8ccde970c375b38bdd8070062e68ab0/`
+  // );
+  // const metaplex = new Metaplex(connection);
 
-    const parsedLargestAccountInfo = await connection.getParsedAccountInfo(
-      largestAccount.value[0].address
-    );
+  // const data: any = await metaplex.nfts().findAllByCreator({
+  //   creator: new PublicKey("GrwudmZhRoMnvNG9soabxd7JFbDsV3btBzMbHpDGU7DX"),
+  // });
 
-    const parsedData = parsedLargestAccountInfo.value
-      ?.data as ParsedAccountData;
+  // fs.mkdirSync("./snapshot/paingelz");
+  // fs.writeFileSync("./snapshot/paingelz/allnfts.json", JSON.stringify(data));
 
-    const wallet = parsedData.parsed.info.owner;
+  // const wallets: any[] = [];
 
-    if (wallets.includes(wallet)) {
-      console.log("Duplicate wallet found: ", wallet);
-      continue;
-    }
+  // for (let i = 0; i < data.length; i++) {
+  //   const address = new PublicKey(data[i].mintAddress);
 
-    wallets.push(parsedData.parsed.info.owner);
-  }
+  //   const largestAccount = await connection.getTokenLargestAccounts(address);
 
-  fs.writeFileSync("./snapshot/wallets.json", JSON.stringify(wallets));
+  //   const parsedLargestAccountInfo = await connection.getParsedAccountInfo(
+  //     largestAccount.value[0].address
+  //   );
+
+  //   const parsedData = parsedLargestAccountInfo.value
+  //     ?.data as ParsedAccountData;
+
+  //   const wallet = parsedData.parsed.info.owner;
+
+  //   if (wallets.includes(wallet)) {
+  //     console.log("Duplicate wallet found: ", wallet);
+  //     continue;
+  //   }
+
+  //   console.log(`${i + 1} Adding wallet:`, wallet);
+  //   wallets.push(wallet);
+  // }
+
+  // fs.writeFileSync(
+  //   "./snapshot/paingelz/wallets4.json",
+  //   JSON.stringify(wallets)
+  // );
 };
 
-const filterWallets = () => {
-  const wallets = fs.readFileSync("./snapshot/wallets.json", "utf8");
-  const parsedWallets = JSON.parse(wallets);
-  const filteredWallets: any[] = [];
-
-  for (let wallet of parsedWallets) {
-    if (filteredWallets.includes(wallet)) {
-      console.log("Duplicate wallet found: ", wallet);
-      continue;
-    }
-    filteredWallets.push(wallet);
-  }
-
-  console.log("Total wallets: ", parsedWallets.length);
-  console.log("Filtered wallets: ", filteredWallets.length);
-
-  fs.writeFileSync(
-    "./snapshot/filteredWallets.json",
-    JSON.stringify(filteredWallets)
-  );
-};
-
-// main();
-filterWallets();
+main();

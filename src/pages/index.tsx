@@ -364,7 +364,7 @@ const MintWindow = ({
   };
 
   useEffect(() => {
-    getNftInfo();
+    // getNftInfo();
     generateDots();
     generateClouds();
     requestRef.current = requestAnimationFrame(animate);
@@ -402,98 +402,98 @@ const MintWindow = ({
     setClouds(clouds);
   };
 
-  const getNftInfo = async () => {
-    const candyMachine = await fetchCandyMachine(
-      umi,
-      publicKey("EZ6aWvaBmhZNLRsbDn5BBSoGfd3Nz8sx5Bv23DLecFUg")
-    );
+  // const getNftInfo = async () => {
+  //   const candyMachine = await fetchCandyMachine(
+  //     umi,
+  //     publicKey("EZ6aWvaBmhZNLRsbDn5BBSoGfd3Nz8sx5Bv23DLecFUg")
+  //   );
 
-    const candyGuard = await safeFetchCandyGuard(
-      umi,
-      candyMachine.mintAuthority
-    );
+  //   const candyGuard = await safeFetchCandyGuard(
+  //     umi,
+  //     candyMachine.mintAuthority
+  //   );
 
-    priceRef.current =
-      // @ts-ignore
-      Number(candyGuard?.guards.solPayment.value.lamports.basisPoints) /
-      10 ** 9;
-    itemsLeftRef.current = candyMachine.items.filter(
-      (item) => !item.minted
-    ).length;
-  };
+  //   priceRef.current =
+  //     // @ts-ignore
+  //     Number(candyGuard?.guards.solPayment.value.lamports.basisPoints) /
+  //     10 ** 9;
+  //   itemsLeftRef.current = candyMachine.items.filter(
+  //     (item) => !item.minted
+  //   ).length;
+  // };
 
-  const mint = async () => {
-    if (!wallet.publicKey) {
-      setErrorMessage("Please connect your wallet");
-      return;
-    }
+  // const mint = async () => {
+  //   if (!wallet.publicKey) {
+  //     setErrorMessage("Please connect your wallet");
+  //     return;
+  //   }
 
-    const candyMachine = await fetchCandyMachine(
-      umi,
-      publicKey("EZ6aWvaBmhZNLRsbDn5BBSoGfd3Nz8sx5Bv23DLecFUg")
-    );
+  //   const candyMachine = await fetchCandyMachine(
+  //     umi,
+  //     publicKey("EZ6aWvaBmhZNLRsbDn5BBSoGfd3Nz8sx5Bv23DLecFUg")
+  //   );
 
-    const candyGuard = await safeFetchCandyGuard(
-      umi,
-      candyMachine.mintAuthority
-    );
+  //   const candyGuard = await safeFetchCandyGuard(
+  //     umi,
+  //     candyMachine.mintAuthority
+  //   );
 
-    try {
-      const nftMint = generateSigner(umi);
+  //   try {
+  //     const nftMint = generateSigner(umi);
 
-      if (!mintAmount || mintAmount < 1 || mintAmount > 35) {
-        setErrorMessage("Please enter a valid mint amount");
-        return;
-      }
+  //     if (!mintAmount || mintAmount < 1 || mintAmount > 35) {
+  //       setErrorMessage("Please enter a valid mint amount");
+  //       return;
+  //     }
 
-      const txs = [];
-      for (let i = 0; i < mintAmount; i++) {
-        const transaction = transactionBuilder()
-          .add(setComputeUnitLimit(umi, { units: 800000 }))
-          .add(
-            mintV2(umi, {
-              candyMachine: candyMachine.publicKey,
-              candyGuard: candyGuard?.publicKey,
-              nftMint,
-              collectionMint: candyMachine.collectionMint,
-              collectionUpdateAuthority: candyMachine.authority,
-              mintArgs: {
-                mintLimit: some({
-                  id: 1,
-                }),
-                solPayment: some({
-                  destination: publicKey(
-                    "CXgv23cJYyezFK8F5kioHdM6VuRFg1SeKp3Yt72w2Ede"
-                  ),
-                }),
-              },
-            })
-          );
+  //     const txs = [];
+  //     for (let i = 0; i < mintAmount; i++) {
+  //       const transaction = transactionBuilder()
+  //         .add(setComputeUnitLimit(umi, { units: 800000 }))
+  //         .add(
+  //           mintV2(umi, {
+  //             candyMachine: candyMachine.publicKey,
+  //             candyGuard: candyGuard?.publicKey,
+  //             nftMint,
+  //             collectionMint: candyMachine.collectionMint,
+  //             collectionUpdateAuthority: candyMachine.authority,
+  //             mintArgs: {
+  //               mintLimit: some({
+  //                 id: 1,
+  //               }),
+  //               solPayment: some({
+  //                 destination: publicKey(
+  //                   "CXgv23cJYyezFK8F5kioHdM6VuRFg1SeKp3Yt72w2Ede"
+  //                 ),
+  //               }),
+  //             },
+  //           })
+  //         );
 
-        txs.push(
-          transaction.sendAndConfirm(umi, {
-            confirm: { commitment: "confirmed" },
-          })
-        );
-      }
+  //       txs.push(
+  //         transaction.sendAndConfirm(umi, {
+  //           confirm: { commitment: "confirmed" },
+  //         })
+  //       );
+  //     }
 
-      const results = await Promise.all(txs);
+  //     const results = await Promise.all(txs);
 
-      const txids = results.map(
-        ({ signature }) => base58.deserialize(signature)[0]
-      );
+  //     const txids = results.map(
+  //       ({ signature }) => base58.deserialize(signature)[0]
+  //     );
 
-      txhashRef.current = txids;
+  //     txhashRef.current = txids;
 
-      txids.forEach((txid) => {
-        console.log(`Minted NFT with txid: ${txid}`);
-      });
-      await getNftInfo();
-      setSuccess(true);
-    } catch (error) {
-      console.error(`Error minting NFT: ${error}`);
-    }
-  };
+  //     txids.forEach((txid) => {
+  //       console.log(`Minted NFT with txid: ${txid}`);
+  //     });
+  //     await getNftInfo();
+  //     setSuccess(true);
+  //   } catch (error) {
+  //     console.error(`Error minting NFT: ${error}`);
+  //   }
+  // };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(

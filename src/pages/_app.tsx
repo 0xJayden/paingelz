@@ -7,10 +7,11 @@ import type { AppProps } from "next/app";
 import * as web3 from "@solana/web3.js";
 import { useMemo } from "react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { trpc } from "@/utils/trpc";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 
-export default function App({ Component, pageProps }: AppProps) {
+const App = ({ Component, pageProps }: AppProps) => {
   const endpoint = web3.clusterApiUrl("devnet");
   const wallets = useMemo(() => [], []);
 
@@ -23,4 +24,6 @@ export default function App({ Component, pageProps }: AppProps) {
       </WalletProvider>
     </ConnectionProvider>
   );
-}
+};
+
+export default trpc.withTRPC(App);

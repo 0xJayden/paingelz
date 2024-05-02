@@ -39,3 +39,15 @@ next-env.d.ts
 *.psd
 *.log
 *.env
+airdrop_list.json
+airdrop_results.json
+airdropscript.js
+cache.json
+collection_script.ts
+config.json
+topscript.ts
+walletscript.ts
+/snapshot
+/assets
+script.ts
+/stickers
