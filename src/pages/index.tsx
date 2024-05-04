@@ -22,35 +22,17 @@ import {
 import Head from "next/head";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import { walletAdapterIdentity } from "@metaplex-foundation/umi-signer-wallet-adapters";
-import {
-  fetchCandyMachine,
-  mintV2,
-  mplCandyMachine,
-  safeFetchCandyGuard,
-} from "@metaplex-foundation/mpl-candy-machine";
 import { mplTokenMetadata } from "@metaplex-foundation/mpl-token-metadata";
-import {
-  generateSigner,
-  publicKey,
-  some,
-  transactionBuilder,
-} from "@metaplex-foundation/umi";
-import { setComputeUnitLimit } from "@metaplex-foundation/mpl-toolbox";
-import { base58 } from "@metaplex-foundation/umi/serializers";
 import { Connection } from "@solana/web3.js";
 import { Metaplex } from "@metaplex-foundation/js";
 import Link from "next/link";
+import { Windows } from "@/types";
+import ChatWindow from "@/components/Chat";
+import { BottomNavbar } from "@/components/BottomNavbar";
+import { IconContainer } from "@/components/IconContainer";
+import Radio from "@/components/Radio";
 
 const inter = Inter({ subsets: ["latin"] });
-
-type Windows =
-  | "mint"
-  | "map"
-  | "game"
-  | "personality"
-  | "collection"
-  | "socials"
-  | "artist";
 
 export default function Home() {
   const [dots, setDots] = useState<Array<Dot>>([]);
@@ -172,6 +154,7 @@ export default function Home() {
               alt="paingelzlogo"
             />
           </div>
+          <Radio setAudio={setAudio} audio={audio} />
           <button className="absolute z-50 top-1 right-1" onClick={playOrPause}>
             <Icon
               path={playing ? mdiVolumeMute : mdiVolumeHigh}
@@ -231,6 +214,13 @@ export default function Home() {
               focusedWindow={focusedWindow}
             />
           )}
+          {windows.includes("chat") && (
+            <ChatWindow
+              setWindows={setWindows}
+              setFocusedWindow={setFocusedWindow}
+              focusedWindow={focusedWindow}
+            />
+          )}
           <BottomNavbar
             setWindows={setWindows}
             setFocusedWindow={setFocusedWindow}
@@ -252,7 +242,7 @@ type Dot = {
   size: number;
 };
 
-const colors = ["red", "blue", "green", "pink", "stars", "gray"];
+export const colors = ["red", "blue", "green", "pink", "stars", "gray"];
 
 const MintWindow = ({
   setWindows,
@@ -280,7 +270,7 @@ const MintWindow = ({
 
   const umi = createUmi(process.env.NEXT_PUBLIC_ENDPOINT as string)
     .use(walletAdapterIdentity(wallet))
-    .use(mplCandyMachine())
+    // .use(mplCandyMachine())
     .use(mplTokenMetadata());
 
   const animate = () => {
@@ -402,99 +392,6 @@ const MintWindow = ({
     setClouds(clouds);
   };
 
-  // const getNftInfo = async () => {
-  //   const candyMachine = await fetchCandyMachine(
-  //     umi,
-  //     publicKey("EZ6aWvaBmhZNLRsbDn5BBSoGfd3Nz8sx5Bv23DLecFUg")
-  //   );
-
-  //   const candyGuard = await safeFetchCandyGuard(
-  //     umi,
-  //     candyMachine.mintAuthority
-  //   );
-
-  //   priceRef.current =
-  //     // @ts-ignore
-  //     Number(candyGuard?.guards.solPayment.value.lamports.basisPoints) /
-  //     10 ** 9;
-  //   itemsLeftRef.current = candyMachine.items.filter(
-  //     (item) => !item.minted
-  //   ).length;
-  // };
-
-  // const mint = async () => {
-  //   if (!wallet.publicKey) {
-  //     setErrorMessage("Please connect your wallet");
-  //     return;
-  //   }
-
-  //   const candyMachine = await fetchCandyMachine(
-  //     umi,
-  //     publicKey("EZ6aWvaBmhZNLRsbDn5BBSoGfd3Nz8sx5Bv23DLecFUg")
-  //   );
-
-  //   const candyGuard = await safeFetchCandyGuard(
-  //     umi,
-  //     candyMachine.mintAuthority
-  //   );
-
-  //   try {
-  //     const nftMint = generateSigner(umi);
-
-  //     if (!mintAmount || mintAmount < 1 || mintAmount > 35) {
-  //       setErrorMessage("Please enter a valid mint amount");
-  //       return;
-  //     }
-
-  //     const txs = [];
-  //     for (let i = 0; i < mintAmount; i++) {
-  //       const transaction = transactionBuilder()
-  //         .add(setComputeUnitLimit(umi, { units: 800000 }))
-  //         .add(
-  //           mintV2(umi, {
-  //             candyMachine: candyMachine.publicKey,
-  //             candyGuard: candyGuard?.publicKey,
-  //             nftMint,
-  //             collectionMint: candyMachine.collectionMint,
-  //             collectionUpdateAuthority: candyMachine.authority,
-  //             mintArgs: {
-  //               mintLimit: some({
-  //                 id: 1,
-  //               }),
-  //               solPayment: some({
-  //                 destination: publicKey(
-  //                   "CXgv23cJYyezFK8F5kioHdM6VuRFg1SeKp3Yt72w2Ede"
-  //                 ),
-  //               }),
-  //             },
-  //           })
-  //         );
-
-  //       txs.push(
-  //         transaction.sendAndConfirm(umi, {
-  //           confirm: { commitment: "confirmed" },
-  //         })
-  //       );
-  //     }
-
-  //     const results = await Promise.all(txs);
-
-  //     const txids = results.map(
-  //       ({ signature }) => base58.deserialize(signature)[0]
-  //     );
-
-  //     txhashRef.current = txids;
-
-  //     txids.forEach((txid) => {
-  //       console.log(`Minted NFT with txid: ${txid}`);
-  //     });
-  //     await getNftInfo();
-  //     setSuccess(true);
-  //   } catch (error) {
-  //     console.error(`Error minting NFT: ${error}`);
-  //   }
-  // };
-
   const copyToClipboard = () => {
     navigator.clipboard.writeText(
       txhashRef.current.map((txid) => txid).join(", ")
@@ -547,27 +444,6 @@ const MintWindow = ({
           />
         </div>
         <div className="flex z-30 text-center flex-col justify-center p-2 space-y-1">
-          {/* <div className="flex items-center space-x-4">
-            <p>{priceRef.current} SOL</p>
-            <p>|</p>
-            <p>{itemsLeftRef.current}/10000 left</p>
-          </div>
-          <button onClick={mint} className="border border-[#00eeee] p-1 px-5">
-            Mint
-          </button>
-          <div className="flex flex-col justify-center">
-            <p className="text-center">Mint Amount</p>
-            <input
-              type="number"
-              value={mintAmount ? mintAmount : ""}
-              onChange={(e) => {
-                if (+e.target.value >= 35) return setMintAmount(35);
-                if (+e.target.value < 0) return setMintAmount(1);
-                setMintAmount(Number(e.target.value));
-              }}
-              className="border border-[#00eeee] p-1 bg-white/20 text-center"
-            />
-          </div> */}
           <p>Minted Out!</p>
           <p>Find Paingelz at</p>
         </div>
@@ -662,197 +538,6 @@ const MintWindow = ({
           </div>
         </div>
       )}
-    </div>
-  );
-};
-
-const IconContainer = ({
-  setWindows,
-  setFocusedWindow,
-}: {
-  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
-  setWindows: Dispatch<SetStateAction<Windows[]>>;
-}) => {
-  const openWindow = (window: Windows) => {
-    setWindows((prev) => {
-      if (prev.includes(window)) return prev;
-      return [...prev, window];
-    });
-    setFocusedWindow(window);
-  };
-
-  return (
-    <div className="absolute gap-4 gap-y-10 grid grid-cols-4 p-4 w-full z-10">
-      <IconContainerIcon
-        icon="/minticon.png"
-        text="Mint Paingelz"
-        alt="mint"
-        openWindow={() => openWindow("mint")}
-      />
-      <IconContainerIcon
-        icon="/mapicon.png"
-        text="Paingelz World"
-        alt="map"
-        openWindow={() => openWindow("map")}
-      />
-      <IconContainerIcon
-        icon="/gameicon.png"
-        text="Play Game"
-        alt="game"
-        openWindow={() => openWindow("game")}
-      />
-      <IconContainerIcon
-        icon="/brain.png"
-        text="Personality Test"
-        alt="personality"
-        openWindow={() => openWindow("personality")}
-      />
-      <IconContainerIcon
-        icon="/clouds.png"
-        text="Community"
-        alt="socials"
-        openWindow={() => openWindow("socials")}
-      />
-      <IconContainerIcon
-        icon="/starsPaingel.png"
-        text="View Collection"
-        alt="collection"
-        openWindow={() => openWindow("collection")}
-      />
-      <IconContainerIcon
-        icon="/artist.png"
-        text="Meet the Artist"
-        alt="artist"
-        openWindow={() => openWindow("artist")}
-      />
-    </div>
-  );
-};
-
-const IconContainerIcon = ({
-  icon,
-  alt,
-  text,
-  openWindow,
-}: {
-  icon: string;
-  alt: Windows;
-  text: string;
-  openWindow: () => void;
-}) => {
-  return (
-    <button
-      onClick={openWindow}
-      className="h-20 w-20 flex items-center justify-center flex-col"
-    >
-      <Image
-        src={icon}
-        width={40}
-        height={40}
-        alt={alt + "icon"}
-        className="min-h-10 min-w-10"
-      />
-      <p className="text-sm drop-shadow text-center">{text}</p>
-    </button>
-  );
-};
-
-const BottomNavbarIcon = ({
-  icon,
-  text,
-  openWindow,
-  windows,
-}: {
-  icon: string;
-  text: Windows;
-  openWindow: (window: Windows) => void;
-  windows: Windows[];
-}) => {
-  return (
-    <button
-      onClick={() => openWindow(text)}
-      className="h-20 w-20 flex items-center justify-center flex-col"
-    >
-      <Image
-        src={icon}
-        width={40}
-        height={40}
-        alt={text + "icon"}
-        className="min-h-10 min-w-10"
-      />
-      {windows.includes(text) && (
-        <div className="rounded-full bg-white h-1 w-1"></div>
-      )}
-    </button>
-  );
-};
-
-const BottomNavbar = ({
-  setWindows,
-  setFocusedWindow,
-  windows,
-}: {
-  setWindows: Dispatch<SetStateAction<Windows[]>>;
-  setFocusedWindow: Dispatch<SetStateAction<Windows>>;
-  windows: Windows[];
-}) => {
-  const openWindow = (window: Windows) => {
-    if (windows.includes(window)) {
-      setWindows((prev) => prev.filter((w) => w !== window));
-    } else {
-      setWindows((prev) => [...prev, window]);
-      setFocusedWindow(window);
-    }
-  };
-
-  return (
-    <div className="absolute bottom-0 p-2 z-20 left-0 right-0 h-20">
-      <div className="bg-[#20201d]/70 space-x-2 px-2 backdrop-blur overflow-y-hidden overflow-x-scroll h-full rounded-xl flex p-1 items-center">
-        <WalletMultiButton />
-        <div className="h-full border border-[#555555]"></div>
-        <BottomNavbarIcon
-          icon="/minticon.png"
-          text="mint"
-          openWindow={openWindow}
-          windows={windows}
-        />
-        <BottomNavbarIcon
-          icon="/mapicon.png"
-          text="map"
-          openWindow={openWindow}
-          windows={windows}
-        />
-        <BottomNavbarIcon
-          icon="/gameicon.png"
-          text="game"
-          openWindow={openWindow}
-          windows={windows}
-        />
-        <BottomNavbarIcon
-          icon="/brain.png"
-          text="personality"
-          openWindow={openWindow}
-          windows={windows}
-        />
-        <BottomNavbarIcon
-          icon="/clouds.png"
-          text="socials"
-          openWindow={openWindow}
-          windows={windows}
-        />
-        <BottomNavbarIcon
-          icon="/starsPaingel.png"
-          text="collection"
-          openWindow={openWindow}
-          windows={windows}
-        />
-        <BottomNavbarIcon
-          icon="/artist.png"
-          text="artist"
-          openWindow={openWindow}
-          windows={windows}
-        />
-      </div>
     </div>
   );
 };
@@ -2094,12 +1779,12 @@ const SocialsWindow = ({
   return (
     <div
       className={`absolute text-[#dedede] flex flex-col border-2 rounded h-[60%] md:h-[70%] animate-open w-[75%] top-10 right-16 bottom-0 my-auto`}
-      style={{ zIndex: focusedWindow === "socials" ? 30 : 20 }}
+      style={{ zIndex: focusedWindow === "community" ? 30 : 20 }}
     >
       <div className="absolute space-x-2 items-center flex z-30 top-0 w-full h-6 p-1 bg-gradient-to-r from-[#a6d4a7] via-[#dddddd] to-[#a6d4a7]">
         <button
           onClick={() =>
-            setWindows((prev) => prev.filter((w) => w !== "socials"))
+            setWindows((prev) => prev.filter((w) => w !== "community"))
           }
           className="bg-red-500 rounded-full h-4 w-4 flex justify-center items-center"
         >
@@ -2108,7 +1793,7 @@ const SocialsWindow = ({
         <p className="text-sm text-white drop-shadow font-bold">Community</p>
       </div>
       <div
-        onClick={() => setFocusedWindow("socials")}
+        onClick={() => setFocusedWindow("community")}
         className="flex h-full pt-10 p-2 relative overflow-y-scroll flex-col bg-black"
       >
         <h2 className="text-2xl pb-4 text-center font-bold">Community</h2>
