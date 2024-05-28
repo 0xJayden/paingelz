@@ -5,6 +5,7 @@ import {
   mdiArrowRight,
   mdiClose,
   mdiContentCopy,
+  mdiStar,
   mdiTrophy,
   mdiVolumeHigh,
   mdiVolumeMute,
@@ -444,7 +445,14 @@ const MintWindow = ({
           />
         </div>
         <div className="flex z-30 text-center flex-col justify-center p-2 space-y-1">
-          <p>Minted Out!</p>
+          <Link
+            className="p-1 border flex items-center justify-center space-x-1 border-[#f0fa6f] text-[#f0fa6f]"
+            href={"https://rewards.paingelz.com"}
+          >
+            <Icon path={mdiStar} className="h-4" />
+            <p className="text-sm">Claim Popcat</p>
+            <Icon path={mdiStar} className="h-4" />
+          </Link>
           <p>Find Paingelz at</p>
         </div>
         <div className="space-x-2 justify-center z-30 pb-2 flex">
@@ -452,14 +460,14 @@ const MintWindow = ({
             className="p-1 flex items-center space-x-1 border text-white "
             href={"https://www.tensor.trade/trade/paingelz"}
           >
-            <p>Tensor</p>
+            <p className="text-sm">Tensor</p>
             <Icon path={mdiArrowRight} className="h-4" />
           </Link>
           <Link
             className="p-1 border border-[#ee00ee] flex items-center space-x-1 text-[#ee00ee]"
             href={"https://magiceden.io/marketplace/paingelz_"}
           >
-            <p>Magic Eden</p>
+            <p className="text-sm">Magic Eden</p>
             <Icon path={mdiArrowRight} className="h-4" />
           </Link>
         </div>
@@ -469,7 +477,7 @@ const MintWindow = ({
             className="p-1 flex space-x-1 items-center border text-center border-[#00eeee] "
             href={"https://t.me/paingelzportal"}
           >
-            <p>Telegram</p>
+            <p className="text-sm">Telegram</p>
             <Icon path={mdiArrowRight} className="h-4" />
           </Link>
         </div>
@@ -1812,6 +1820,14 @@ const SocialsWindow = ({
           </Link>
         </div>
       </div>
+    </div>
+  );
+};
+
+const ClaimButton = () => {
+  return (
+    <div className="fixed inset-0 z-[99] bg-black/50 backdrop-blur-sm flex justify-center items-center">
+      <div className="animate-fadeUp p-2 rounded border"></div>
     </div>
   );
 };
