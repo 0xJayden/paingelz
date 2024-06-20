@@ -446,11 +446,11 @@ const MintWindow = ({
         </div>
         <div className="flex z-30 text-center flex-col justify-center p-2 space-y-1">
           <Link
-            className="p-1 border flex items-center justify-center space-x-1 border-[#f0fa6f] text-[#f0fa6f]"
-            href={"https://rewards.paingelz.com"}
+            className="p-1 border flex items-center justify-center space-x-1 border-[#f0fa6f] opacity-50 text-[#f0fa6f]"
+            href={"https://paingelz.com"}
           >
             <Icon path={mdiStar} className="h-4" />
-            <p className="text-sm">Claim Popcat</p>
+            <p className="text-sm">Claim Popcat - Unavailable</p>
             <Icon path={mdiStar} className="h-4" />
           </Link>
           <p>Find Paingelz at</p>
@@ -1820,14 +1820,6 @@ const SocialsWindow = ({
           </Link>
         </div>
       </div>
-    </div>
-  );
-};
-
-const ClaimButton = () => {
-  return (
-    <div className="fixed inset-0 z-[99] bg-black/50 backdrop-blur-sm flex justify-center items-center">
-      <div className="animate-fadeUp p-2 rounded border"></div>
     </div>
   );
 };
