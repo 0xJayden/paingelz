@@ -450,9 +450,10 @@ const MintWindow = ({
             href={"https://paingelz.com"}
           >
             <Icon path={mdiStar} className="h-4" />
-            <p className="text-sm">Claim Popcat - Unavailable</p>
+            <p className="text-sm">Claim Popcat - Finished</p>
             <Icon path={mdiStar} className="h-4" />
           </Link>
+          <p>Next Partnership coming soon!</p>
           <p>Find Paingelz at</p>
         </div>
         <div className="space-x-2 justify-center z-30 pb-2 flex">
